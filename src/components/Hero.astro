@@ -2,19 +2,27 @@
 /**
  * Hero section.
  *
- * The first thing every visitor sees, so it has to do three things fast:
- * 1. Say who you are (NiftyAi by Igor Lima).
- * 2. Say what you do (AI + automation for founders and small teams).
- * 3. Give them somewhere to go (primary CTA to services, secondary to work).
+ * Three jobs the hero has to do in the first 1.5 seconds:
+ *  1. Brand: chrome "Nifty" wordmark sits as a watermark behind the
+ *     headline. Big visual punch, immediate identity.
+ *  2. Position: Igor's actual differentiators (operator background,
+ *     trilingual, optimization obsession) replace generic stack badges.
+ *  3. Direction: one primary CTA to the services list, one secondary
+ *     to recent work. Decisions made for the visitor, not deferred.
  *
- * The animated background is two layered radial gradients that drift very
- * slowly. It reads as "alive" without distracting from the headline.
+ * The chrome wordmark lives in /public so it's served as-is without
+ * going through Vite's asset pipeline. We prefix with BASE_URL so the
+ * GitHub Pages deploy path (/niftyai-portfolio/) gets baked in correctly.
  */
+
+// Build the absolute URL once so the template stays clean. BASE_URL ends
+// in a "/" or "" depending on Astro config, so we don't add another slash.
+const wordmarkUrl = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.replace(/\/\//g, "/");
 ---
 
 <section class="relative isolate overflow-hidden">
-  <!-- Ambient gradient orbs. Two of them, drifting in opposite directions,
-       blurred heavily so they read as atmosphere rather than shapes. -->
+  <!-- Ambient gradient orbs. Two of them, blurred heavily, drifting in
+       opposite directions. Reads as atmosphere, not shapes. -->
   <div
     class="absolute -top-32 left-1/4 -z-10 h-[420px] w-[420px] rounded-full bg-electric-500/15 blur-3xl"
     aria-hidden="true"
@@ -24,16 +32,32 @@
     aria-hidden="true"
   ></div>
 
+  <!-- Chrome Nifty wordmark as a hero watermark. Sits behind the text at
+       low opacity with a slight desaturation so it reads as texture, not
+       a competing element. mix-blend-mode: luminosity strips the residual
+       white tint and lets the chrome metallic shine show through against
+       the dark page. The rotation gives it just enough motion that the
+       image doesn't sit flat. -->
+  <img
+    src={wordmarkUrl}
+    alt=""
+    aria-hidden="true"
+    width="1050"
+    height="650"
+    class="pointer-events-none absolute right-2 top-[18%] -z-10 hidden w-[48%] max-w-[640px] select-none opacity-[0.28] mix-blend-luminosity md:block md:opacity-[0.35]"
+    loading="eager"
+    fetchpriority="high"
+  />
+
   <div class="mx-auto max-w-6xl px-6 pt-24 pb-32 md:pt-32 md:pb-44">
-    <!-- The little "available for hire" pill above the headline is the kind
-         of detail that tells visitors this person is approachable. The
-         pulsing dot is hand-crafted CSS, not an image, so it stays crisp. -->
+    <!-- Status pill: pulsing dot tells visitors I'm taking work right now.
+         The pulse is pure CSS via Tailwind's animate-ping utility. -->
     <div class="reveal mb-8 inline-flex items-center gap-2 rounded-full border border-electric-500/30 bg-electric-500/5 px-4 py-1.5 text-xs font-medium text-electric-400">
       <span class="relative flex h-2 w-2">
         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-electric-400 opacity-60"></span>
         <span class="relative inline-flex h-2 w-2 rounded-full bg-electric-500"></span>
       </span>
-      Available for new projects
+      Taking on new projects this quarter
     </div>
 
     <h1
@@ -49,9 +73,11 @@
       class="reveal mt-8 max-w-2xl text-lg leading-relaxed text-paper-200 md:text-xl"
       data-reveal-delay="280"
     >
-      I'm Igor Lima. I ship custom AI agents, internal automations, and tidy
-      web tools for founders and small teams who need the result, not the
-      tutorial. Clean code, clear pricing, no buzzwords.
+      I'm Igor Lima. Before college I ran a small mattress retail chain, so
+      I know what it's like to drown in busywork that should've been a
+      script. Now I ship custom AI agents, internal automations, and small
+      web tools for founders and small teams that would rather get the
+      result than the tutorial.
     </p>
 
     <div class="reveal mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center" data-reveal-delay="440">
@@ -72,23 +98,22 @@
       </a>
     </div>
 
-    <!-- Trust signal row. A small list of capabilities or stack badges
-         under the CTAs gives skimmers a visual cue that this isn't a
-         pitch landing page; there's substance. -->
+    <!-- Real differentiators, not a stack-badge dump. Visitors who skim
+         hero copy still pick up the moats: I've actually run a business,
+         I speak three languages your customers speak, and I've been
+         hands-on with LLMs longer than most CS students. -->
     <div
       class="reveal mt-16 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs text-paper-300"
       data-reveal-delay="600"
     >
       <span class="text-electric-400">{`>`}</span>
-      <span>Python</span>
+      <span>Operator before engineer</span>
       <span class="text-ink-500">/</span>
-      <span>TypeScript</span>
+      <span>EN &middot; PT &middot; ES</span>
       <span class="text-ink-500">/</span>
-      <span>OpenAI &amp; Anthropic APIs</span>
+      <span>Prompt engineering since 2020</span>
       <span class="text-ink-500">/</span>
-      <span>n8n / Zapier</span>
-      <span class="text-ink-500">/</span>
-      <span>FastAPI / Next.js</span>
+      <span>San Diego based</span>
     </div>
   </div>
 </section>

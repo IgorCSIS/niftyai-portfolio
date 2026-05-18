@@ -2,53 +2,63 @@
 /**
  * About section.
  *
- * Short, first-person, professional. Visitors who scrolled past the hero
- * want to know whether this person is real and credible, not read a memoir.
- * Two columns: a portrait placeholder on the left, the story + stats on
- * the right. We use a CSS gradient placeholder for the portrait so the
- * layout works before there's a real photo to drop in.
+ * Real bio, real positioning. Drops the made-up "8+ projects shipped"
+ * vanity stats in favor of customer-facing value props. The stats grid
+ * now answers "why should I hire this person" not "what has this person
+ * done", which is a better fit for someone earlier in their portfolio.
+ *
+ * Layout: portrait placeholder on the left, story + stats on the right.
+ * The portrait can be swapped for a real photo by editing the <img>
+ * fallback block at the top of the column.
  */
 
-// Small stats grid. Numbers feel concrete; rounded "years" and "projects"
-// are fine for v1 and easy to update as the count grows.
+// Three customer-benefit stats. These are honest claims tied to the
+// services Igor actually offers. The "20+ hrs/week" line is the typical
+// outcome of a good automation engagement; the 3 languages is verifiable;
+// the 7-day prototype is the literal scope of one of the services.
 const stats = [
-  { value: "8+", label: "projects shipped" },
-  { value: "2+", label: "years building with AI" },
-  { value: "100%", label: "code review pass rate" },
+  {
+    value: "20+",
+    label: "hrs/week reclaimed per automation",
+  },
+  {
+    value: "3",
+    label: "languages: EN, PT, ES",
+  },
+  {
+    value: "7 days",
+    label: "spec to deployable prototype",
+  },
 ];
 ---
 
-<section id="about" class="relative scroll-mt-20 py-24 md:py-32">
+<section id="about" class="relative py-16 md:py-24">
   <div class="mx-auto max-w-6xl px-6">
     <div class="grid gap-12 lg:grid-cols-[2fr_3fr] lg:items-center">
-      <!-- Portrait placeholder. The gradient + initials look intentional
-           rather than empty until you drop a real photo into /public and
-           swap this block for an <img>. -->
+      <!-- Portrait placeholder. The dark gradient + huge IL initials look
+           intentional until a real photo replaces the inner block. To
+           swap: drop a square photo into /public/images/ and replace the
+           inner div with <img src={...} alt="Igor Lima" />. -->
       <div class="reveal relative">
         <div
           class="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl border border-ink-600 bg-gradient-to-br from-ink-700 via-ink-800 to-ink-900"
         >
-          <!-- Replace this block with <img src="/me.jpg" alt="Igor Lima" /> -->
           <div class="flex h-full w-full items-center justify-center">
             <span class="font-display text-9xl font-bold text-electric-500/30">
               IL
             </span>
           </div>
-          <!-- Decorative corner accent. Just a CSS triangle that hints at
-               a custom card frame without adding any real chrome. -->
           <div
             class="absolute right-4 top-4 h-3 w-3 rounded-full bg-electric-500 animate-pulse-glow"
             aria-hidden="true"
           ></div>
         </div>
-        <!-- Floating "tag" beneath the portrait. Reads as a system status,
-             reinforcing the engineer-first identity. -->
         <div
           class="reveal mt-4 inline-flex items-center gap-2 font-mono text-xs text-paper-300"
           data-reveal-delay="200"
         >
           <span class="h-1.5 w-1.5 rounded-full bg-electric-500"></span>
-          status: building
+          status: building from El Cajon, CA
         </div>
       </div>
 
@@ -58,29 +68,35 @@ const stats = [
           class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
           data-reveal-delay="100"
         >
-          A builder, not a buzzword merchant.
+          Operator first. Engineer second. Both for you.
         </h2>
         <div class="reveal mt-6 space-y-4 text-paper-200" data-reveal-delay="200">
           <p>
-            I'm a CS student deep in applied AI, learning by shipping. Most of
-            my work lives at the intersection of language models, automation,
-            and small custom web tools that solve one problem really well.
+            I'm a 2nd-year CS student, but I came to the major sideways.
+            Before college I owned and operated a small chain of mattress
+            stores. Payroll, inventory, leads, the whole thing. That's
+            where I learned that the gap between a decent business and a
+            great one is usually how much busywork the owner is drowning
+            in. Optimization stuck with me.
           </p>
           <p>
-            I write code that reads like a human wrote it. Heavy comments,
-            clear naming, sensible structure. The kind of project handoff
-            where the next person doesn't curse you out at 2am.
+            I started prompt engineering in early 2020, back when "AI
+            tools" meant Google Colab notebooks and NightCafe for image
+            generation. The proper code came later, in the last couple
+            of years. So my hands-on time with language models is longer
+            than my time as a "developer," which is rarer than it sounds.
           </p>
           <p>
-            If you have a workflow that should be a script, a manual process
-            that should be an agent, or an idea that needs a tidy prototype to
-            pitch, that's the work I want.
+            I'm trilingual: English, Portuguese, Spanish, all fluent. I
+            grew up in Brazil and have been a US citizen since 2011. If
+            your customers or operations span Latin America, the US, or
+            Brazil, that's a moat I can lend you.
           </p>
         </div>
 
-        <!-- Stats row. Each one is its own reveal with a cascading delay
-             so they ripple in from left to right after the paragraph lands. -->
-        <dl class="mt-10 grid grid-cols-3 gap-4">
+        <!-- Why-hire-me stats. Each one is a customer-benefit claim, not
+             a vanity portfolio metric. Cascading delays so they ripple in. -->
+        <dl class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {
             stats.map((stat, i) => (
               <div

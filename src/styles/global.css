@@ -14,21 +14,26 @@
 @tailwind utilities;
 
 @layer base {
-  /* The cubic-bezier curve here is the "smooth ease-out" you'll see all over
-     the site. Pulling it into a CSS variable means any place we want the same
-     "feel" (button transitions, card hovers, scroll reveals) can reference
-     the same value without re-typing the magic numbers. */
+  /* The site uses two ease curves consistently. Pulling them into CSS
+     variables means tweaking the "feel" of every transition at once is
+     a one-line change, not a project-wide search-and-replace.
+     - --ease-smooth is easeOutExpo. Strong gentle deceleration at the end,
+       reads as "cinematic" rather than "bouncy". Used for reveals.
+     - --ease-soft is a slower in-out curve. Used for hover transitions
+       where we want both directions to feel equally smooth. */
   :root {
-    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   html {
     /* Smooth in-page anchor scrolls (nav links jumping to sections). The
        'scroll-padding-top' compensates for the fixed header so the section
-       heading doesn't get hidden underneath it after a jump. */
+       heading doesn't get hidden underneath it after a jump. 4rem matches
+       the actual rendered header height (py-4 + content + border ≈ 64px). */
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    scroll-padding-top: 4rem;
     background-color: theme("colors.ink.900");
     color: theme("colors.paper.100");
     font-family: theme("fontFamily.sans");
@@ -119,13 +124,16 @@
 
   /* The "reveal on scroll" base state. JS in src/scripts/reveal.ts flips
      these to the visible state via IntersectionObserver. We start hidden
-     in CSS so there's no flash-of-visible-content before JS hydrates. */
+     in CSS so there's no flash-of-visible-content before JS hydrates.
+     1.1s duration with easeOutExpo: slow, soft landing. The translateY
+     starts at 24px so the movement is visible enough to read as motion,
+     not just a fade. */
   .reveal {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(24px);
     transition:
-      opacity 0.8s var(--ease-smooth),
-      transform 0.8s var(--ease-smooth);
+      opacity 1.1s var(--ease-smooth),
+      transform 1.1s var(--ease-smooth);
     will-change: opacity, transform;
   }
 
@@ -134,31 +142,39 @@
     transform: translateY(0);
   }
 
-  /* Card hover glow: a soft electric halo that fades in on hover. Using
-     a box-shadow with a large blur on the accent color costs less than
-     animating a gradient and looks cleaner on different backgrounds. */
+  /* Card hover glow: a soft electric halo that fades in on hover. The
+     0.55s duration is slower than typical (0.2-0.3s) on purpose. Fast
+     hovers feel reactive but cheap; slow ones feel deliberate and premium.
+     The card lifts 6px instead of 4px to make the motion more noticeable
+     paired with the longer duration. */
   .card-hover {
     transition:
-      transform 0.4s var(--ease-smooth),
-      box-shadow 0.4s var(--ease-smooth),
-      border-color 0.4s var(--ease-smooth);
+      transform 0.55s var(--ease-smooth),
+      box-shadow 0.55s var(--ease-smooth),
+      border-color 0.4s var(--ease-soft);
   }
 
   .card-hover:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     border-color: theme("colors.electric.500");
     box-shadow:
-      0 0 0 1px rgba(62, 224, 187, 0.2),
-      0 20px 40px -20px rgba(62, 224, 187, 0.25);
+      0 0 0 1px rgba(62, 224, 187, 0.22),
+      0 28px 50px -24px rgba(62, 224, 187, 0.32);
   }
 
-  /* Button primary: the main CTA style. We keep the actual class small
-     and compose with Tailwind in components, but the inner gradient and
-     glow need real CSS to look right at scale. */
+  /* Button primary: the main CTA style. Three layered effects:
+     1. The base gradient (::before) is always there.
+     2. A second gradient (::after) crossfades in on hover.
+     3. The button itself lifts 2px and grows a soft electric underglow.
+     The lift is the bit that actually sells "interactive"; the gradient
+     swap is just polish. */
   .btn-primary {
     position: relative;
     isolation: isolate;
     overflow: hidden;
+    transition:
+      transform 0.45s var(--ease-smooth),
+      box-shadow 0.45s var(--ease-smooth);
   }
 
   .btn-primary::before {
@@ -171,7 +187,7 @@
       theme("colors.electric.500"),
       theme("colors.electric.400")
     );
-    transition: opacity 0.4s var(--ease-smooth);
+    transition: opacity 0.5s var(--ease-soft);
   }
 
   .btn-primary::after {
@@ -185,11 +201,55 @@
       theme("colors.electric.400"),
       theme("colors.electric.500")
     );
-    transition: opacity 0.4s var(--ease-smooth);
+    transition: opacity 0.5s var(--ease-soft);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -10px rgba(62, 224, 187, 0.55);
   }
 
   .btn-primary:hover::after {
     opacity: 1;
+  }
+
+  /* Header scroll-state. When the user has scrolled past the hero, the
+     header becomes denser (heavier blur, more opaque). The is-scrolled
+     class is toggled by a tiny scroll listener in Header.astro. */
+  header.site-header {
+    transition:
+      background-color 0.4s var(--ease-soft),
+      border-color 0.4s var(--ease-soft),
+      backdrop-filter 0.4s var(--ease-soft),
+      box-shadow 0.4s var(--ease-soft);
+  }
+
+  header.site-header.is-scrolled {
+    background-color: rgba(8, 9, 11, 0.88);
+    border-bottom-color: rgba(62, 224, 187, 0.12);
+    box-shadow: 0 8px 30px -16px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Nav link underline grow on hover. Pure CSS, no JS. The pseudo-element
+     starts at 0% width and grows to 100% from the left edge. */
+  .nav-link {
+    position: relative;
+    transition: color 0.3s var(--ease-soft);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 1px;
+    width: 0;
+    background-color: theme("colors.electric.400");
+    transition: width 0.4s var(--ease-smooth);
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
   }
 
   /* Section heading label: small uppercase mono tag above section titles.

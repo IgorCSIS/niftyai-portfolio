@@ -17,68 +17,75 @@
 const services = [
   {
     title: "Custom AI Agents",
-    pitch: "An agent that does the boring part of your job. Built for one workflow, tuned, shipped.",
+    pitch:
+      "An agent that handles one workflow end to end. Built around your business, not a generic chatbot wrapper.",
     features: [
-      "OpenAI / Anthropic / open-source models",
-      "Tool use, RAG, memory if needed",
-      "Production-ready, not a notebook",
+      "OpenAI, Anthropic, or open-source models",
+      "Tool use, RAG, and memory when it earns its keep",
+      "Production deploy, not a Colab notebook",
     ],
     price: "$1,200",
     icon: "agent",
   },
   {
     title: "Workflow Automation",
-    pitch: "The thing your team does 40 times a week, but a script does it in 30 seconds instead.",
+    pitch:
+      "The thing your team does 40 times a week, automated so it takes 30 seconds and zero attention.",
     features: [
-      "Python, n8n, Zapier, or custom",
-      "API integrations and webhooks",
-      "Scheduled jobs with monitoring",
+      "Python, n8n, Zapier, or fully custom",
+      "API integrations and webhook plumbing",
+      "Scheduled jobs with real monitoring",
     ],
     price: "$600",
     icon: "automate",
   },
   {
     title: "AI-Powered Web Apps",
-    pitch: "A small, sharp web app with AI under the hood. Real product, not a demo.",
+    pitch:
+      "A small, sharp web app with AI doing the heavy lift. Real product, not a sandbox demo.",
     features: [
       "Next.js or FastAPI + React",
-      "Auth, payments, deployable on day one",
-      "Clean UI you won't be embarrassed by",
+      "Auth, payments, deployable from day one",
+      "Clean UI your customers won't be confused by",
     ],
     price: "$2,500",
     icon: "web",
   },
   {
     title: "Data + LLM Pipelines",
-    pitch: "Move your data through a language model, structure the output, drop it where you need it.",
+    pitch:
+      "Move your messy data through a language model, structure the output, drop it where the rest of your stack expects it.",
     features: [
-      "Document parsing and extraction",
+      "Document parsing, extraction, OCR cleanup",
       "Batch summarization and classification",
-      "CSV / database / Notion / Sheets out",
+      "Output to CSV, Postgres, Notion, or Sheets",
     ],
     price: "$900",
     icon: "pipeline",
   },
   {
     title: "Prototype in a Week",
-    pitch: "Fixed scope, fixed price, working demo in seven days. Perfect for pitching investors or testing an idea.",
+    pitch:
+      "Fixed scope, fixed price, working demo in seven days. For pitching investors or pressure-testing an idea before you sink real money in.",
     features: [
-      "One core feature, polished",
-      "Hosted on a real URL",
-      "You get the code, no lock-in",
+      "One core feature, polished, on a real URL",
+      "Daily updates, weekly is too slow at this scope",
+      "You walk away with the code, no lock-in",
     ],
     price: "$1,800",
     icon: "rocket",
   },
   {
     title: "Consult and Pair",
-    pitch: "Bring me into a working session. We sketch the architecture, write the hard part, you walk away unstuck.",
+    pitch:
+      "Drop me into a working session. We sketch the architecture, write the hard part together, you leave with something you can ship.",
     features: [
       "60 or 90 minute sessions",
-      "Architecture, prompts, or code review",
-      "Recorded summary + follow-up notes",
+      "Architecture, prompt design, or code review",
+      "Recorded summary plus follow-up notes",
     ],
-    price: "$120",
+    price: "$100",
+    priceUnit: "/hr",
     icon: "chat",
   },
 ];
@@ -101,7 +108,7 @@ const icons: Record<string, string> = {
 };
 ---
 
-<section id="services" class="relative scroll-mt-20 py-24 md:py-32">
+<section id="services" class="relative py-16 md:py-24">
   <div class="mx-auto max-w-6xl px-6">
     <div class="max-w-2xl">
       <span class="reveal section-label">What I build</span>
@@ -149,6 +156,11 @@ const icons: Record<string, string> = {
                 </div>
                 <div class="font-display text-2xl font-bold text-electric-400">
                   {service.price}
+                  {service.priceUnit && (
+                    <span class="text-base font-normal text-paper-300">
+                      {service.priceUnit}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

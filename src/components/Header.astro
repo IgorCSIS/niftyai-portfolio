@@ -22,18 +22,19 @@ const navItems = [
 ---
 
 <header
-  class="fixed top-0 left-0 right-0 z-40 border-b border-ink-700/50 bg-ink-900/70 backdrop-blur-md backdrop-saturate-150"
+  class="site-header fixed top-0 left-0 right-0 z-40 border-b border-ink-700/50 bg-ink-900/70 backdrop-blur-md backdrop-saturate-150"
 >
   <nav
     class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4"
     aria-label="Primary"
   >
     <!-- Brand wordmark. The dot before the name is a small visual signature
-         the eye picks up before the text resolves. Keeps the logo memorable
-         without needing a custom mark yet. -->
+         the eye picks up before the text resolves. The "Aesthetics ≠ Stability"
+         tag rides alongside as a quiet brand stamp, hidden on small screens
+         where horizontal real estate is tight. -->
     <a
       href="#top"
-      class="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
+      class="group flex items-center gap-3 font-display text-lg font-semibold tracking-tight"
     >
       <span
         class="inline-block h-2 w-2 rounded-full bg-electric-500 transition-all duration-500 group-hover:scale-150 group-hover:shadow-[0_0_12px_theme(colors.electric.500)]"
@@ -41,6 +42,12 @@ const navItems = [
       ></span>
       <span class="text-paper-100">
         Nifty<span class="text-electric-500">Ai</span>
+      </span>
+      <span
+        class="hidden border-l border-ink-600 pl-3 font-mono text-[10px] uppercase tracking-[0.2em] text-paper-300/70 sm:inline"
+        aria-hidden="true"
+      >
+        Aesthetics &ne; Stability
       </span>
     </a>
 
@@ -51,7 +58,7 @@ const navItems = [
           <li>
             <a
               href={item.href}
-              class="text-sm text-paper-200 transition-colors duration-300 hover:text-electric-400"
+              class="nav-link text-sm text-paper-200 hover:text-electric-400"
             >
               {item.label}
             </a>
@@ -165,4 +172,43 @@ const navItems = [
 
   setupMobileMenu();
   document.addEventListener("astro:page-load", setupMobileMenu);
+
+  /**
+   * Scroll-aware header state.
+   *
+   * Once the user scrolls past ~40px the header gets denser: more opaque,
+   * a faint electric border, a subtle shadow. Reads as the header "settling
+   * in" once you're past the hero. The threshold is intentionally short so
+   * the state change happens almost immediately on any scroll, not after a
+   * delay where the user wonders why the header was so transparent.
+   */
+  function setupScrollHeader() {
+    const header = document.querySelector("header.site-header");
+    if (!header) return;
+
+    // Track state in a closure so we don't toggle the class on every
+    // scroll event (which would cause repaints). Only flip it when we
+    // actually cross the threshold.
+    let isScrolled = false;
+    const threshold = 40;
+
+    const update = () => {
+      const shouldBeScrolled = window.scrollY > threshold;
+      if (shouldBeScrolled !== isScrolled) {
+        isScrolled = shouldBeScrolled;
+        header.classList.toggle("is-scrolled", shouldBeScrolled);
+      }
+    };
+
+    // Run once on init in case the page was loaded mid-scroll (e.g., after
+    // a refresh while scrolled down).
+    update();
+
+    // 'passive: true' tells the browser this listener won't preventDefault,
+    // letting it skip the cancellation check and keep scroll silky smooth.
+    window.addEventListener("scroll", update, { passive: true });
+  }
+
+  setupScrollHeader();
+  document.addEventListener("astro:page-load", setupScrollHeader);
 </script>

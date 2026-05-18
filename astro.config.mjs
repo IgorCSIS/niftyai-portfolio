@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
+import sitemap from "@astrojs/sitemap";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -31,6 +32,16 @@ export default defineConfig({
       // so we can add custom CSS layers alongside it. The integration's
       // default behavior would inject its own and fight ours.
       applyBaseStyles: false,
+    }),
+    // Auto-generates sitemap-index.xml + sitemap-0.xml at build time using
+    // the `site` and `base` config above. Search engines (Google, Bing,
+    // DuckDuckGo) read this to discover and prioritize pages. robots.txt
+    // points to it explicitly.
+    sitemap({
+      // Set higher priority on the homepage; everything else defaults to 0.7.
+      // Last-modified date is auto-detected from file mtimes by the integration.
+      changefreq: "weekly",
+      priority: 0.7,
     }),
   ],
   vite: {

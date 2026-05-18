@@ -41,11 +41,11 @@ export function initReveal(): void {
 
   const elements = document.querySelectorAll<HTMLElement>(".reveal:not(.is-visible)");
 
-  // Threshold 0.1 means "fire when 10% of the element is in view." This
-  // feels right for typical content blocks: the reveal kicks off as the
-  // element enters, not after it's fully past the fold.
-  // rootMargin pulls the trigger line up 80px from the bottom of the
-  // viewport so reveals start just before the element is technically visible.
+  // Threshold 0.05 means "fire when 5% of the element is in view." Combined
+  // with the negative bottom rootMargin (-120px), this fires the reveal
+  // BEFORE the element is fully on-screen, so by the time the user's eye
+  // reaches the element it's already mid-animation. Animations that start
+  // after the user is staring at the element feel late and "sudden".
   activeObserver = new IntersectionObserver(
     (entries, observer) => {
       entries.forEach((entry) => {
@@ -68,8 +68,11 @@ export function initReveal(): void {
       });
     },
     {
-      threshold: 0.1,
-      rootMargin: "0px 0px -80px 0px",
+      threshold: 0.05,
+      // Negative bottom margin: trigger 120px BEFORE the element fully
+      // enters the viewport, so reveals are already animating when the
+      // user scrolls into them.
+      rootMargin: "0px 0px -120px 0px",
     }
   );
 

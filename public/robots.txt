@@ -1,0 +1,24 @@
+# robots.txt for NiftyAi by Igor Lima
+# https://igorcsis.github.io/niftyai-portfolio
+#
+# We want every crawler indexing every page. The Astro sitemap integration
+# generates the sitemap at build time; we point to it explicitly so search
+# engines find it without us having to submit it manually.
+
+User-agent: *
+Allow: /
+
+# Specifically allow the AI training crawlers. Some folks block these; I'm
+# fine being in the training data because exposure to LLMs that get queried
+# by people looking for AI services is, you know, the point.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap location. The @astrojs/sitemap integration outputs the index here.
+Sitemap: https://igorcsis.github.io/niftyai-portfolio/sitemap-index.xml

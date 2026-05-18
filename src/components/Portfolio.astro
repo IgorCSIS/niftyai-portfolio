@@ -20,35 +20,41 @@ interface Project {
   // The "result" line is a single concrete outcome. Specific numbers or
   // tangible wins make a project read as real work rather than a tutorial.
   result?: string;
-  status?: "Live" | "In development" | "Case study";
+  status?: "Live" | "In development" | "Case study" | "Concept";
 }
 
+// These are concepts I'm actively prototyping, not shipped client work.
+// Each one ties back to my real story: the retail lead router is born
+// out of running mattress stores, the watchdog plays my optimization
+// obsession, and the multilingual pipeline leans on my trilingual moat.
+// As real engagements ship, swap these out (or move them to a separate
+// "Concepts" section) and add case studies above.
 const projects: Project[] = [
   {
-    title: "Inbox Triager",
+    title: "Retail Lead Router",
     blurb:
-      "Gmail agent that reads new mail, classifies it, drafts replies for the easy ones, and flags the rest. Saved one founder 9 hours a week.",
-    stack: ["Python", "OpenAI", "Gmail API", "Cloud Run"],
-    result: "9 hours/week saved",
-    status: "Live",
-    repo: "https://github.com/IgorCSIS",
-  },
-  {
-    title: "Spec to App",
-    blurb:
-      "Internal tool that turns a one-page product spec into a working Next.js scaffold with components, routes, and a deploy URL.",
-    stack: ["TypeScript", "Next.js", "Claude", "Vercel API"],
-    result: "30-min specs become deployable apps",
+      "Agent that reads inbound store leads (financing question, walk-in interest, B2B, support), routes each to the right channel, and drafts the first reply. Born out of running mattress stores myself, so the categories aren't guessed.",
+    stack: ["Python", "OpenAI", "Twilio", "Postgres"],
+    result: "Aims to handle 80% of first-touch traffic",
     status: "In development",
     repo: "https://github.com/IgorCSIS",
   },
   {
-    title: "Lead Enricher",
+    title: "Operator's Watchdog",
     blurb:
-      "Drop a CSV of company names in, get back a sheet with industry, headcount, recent news, and a tailored cold-email draft for each.",
+      "Small-business monitoring bot that watches the boring metrics: inventory thresholds, no-show patterns, expense anomalies, lead conversion dips. Pings the owner only when something's actually off, not on every tick.",
     stack: ["FastAPI", "Anthropic", "Postgres", "Resend"],
-    result: "500 leads enriched per run",
-    status: "Case study",
+    result: "Designed for owner-operators, not analysts",
+    status: "Concept",
+    repo: "https://github.com/IgorCSIS",
+  },
+  {
+    title: "Multilingual Content Pipeline",
+    blurb:
+      "One source post in, EN/PT/ES variants out across email, social, and blog. Tone gets adjusted per market, not just translated. For founders selling into the US plus Latin America who don't want to staff three content teams.",
+    stack: ["TypeScript", "Claude", "Buffer API", "Cloud Run"],
+    result: "One brief, three markets, same week",
+    status: "In development",
     repo: "https://github.com/IgorCSIS",
   },
 ];
@@ -59,10 +65,11 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
   Live: "border-electric-500/40 bg-electric-500/10 text-electric-400",
   "In development": "border-amber-500/40 bg-amber-500/10 text-amber-400",
   "Case study": "border-paper-300/30 bg-ink-700 text-paper-200",
+  Concept: "border-paper-300/30 bg-ink-700 text-paper-200",
 };
 ---
 
-<section id="portfolio" class="relative scroll-mt-20 py-24 md:py-32">
+<section id="portfolio" class="relative py-16 md:py-24">
   <!-- A subtle horizontal gradient separator above the section. Just a
        hairline that fades in and out, no JS, no images. -->
   <div
@@ -73,16 +80,17 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
   <div class="mx-auto max-w-6xl px-6">
     <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
       <div class="max-w-2xl">
-        <span class="reveal section-label">Selected work</span>
+        <span class="reveal section-label">What I'm building</span>
         <h2
           class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
           data-reveal-delay="100"
         >
-          Real things, in the wild.
+          Concepts I'm prototyping right now.
         </h2>
         <p class="reveal mt-5 text-lg text-paper-200" data-reveal-delay="200">
-          A few projects I've shipped lately. More on GitHub, more behind
-          NDAs. Reach out if you want a relevant case study walkthrough.
+          I'm being honest: these aren't shipped client work yet. They're
+          the things I'm building to prove out the services on this site.
+          Want one built for your business instead? That's how it works.
         </p>
       </div>
 
@@ -108,9 +116,10 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
             data-reveal-delay={i * 100}
           >
             {/* Decorative project number watermark. Adds visual rhythm to
-                the grid without needing project screenshots yet. */}
+                the grid without needing project screenshots yet. Positioned
+                fully inside the card so overflow-hidden doesn't clip it. */}
             <span
-              class="pointer-events-none absolute -right-2 -top-4 select-none font-display text-7xl font-bold text-ink-700"
+              class="pointer-events-none absolute right-3 top-2 select-none font-display text-6xl font-bold leading-none text-ink-700"
               aria-hidden="true"
             >
               0{i + 1}
