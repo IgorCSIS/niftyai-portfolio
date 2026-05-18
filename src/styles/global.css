@@ -14,14 +14,17 @@
 @tailwind utilities;
 
 @layer base {
-  /* The site uses two ease curves consistently. Pulling them into CSS
-     variables means tweaking the "feel" of every transition at once is
-     a one-line change, not a project-wide search-and-replace.
-     - --ease-smooth is easeOutExpo. Strong gentle deceleration at the end,
-       reads as "cinematic" rather than "bouncy". Used for reveals.
-     - --ease-soft is a slower in-out curve. Used for hover transitions
-       where we want both directions to feel equally smooth. */
+  /* The site uses three ease curves. Pulling them into CSS variables
+     means tweaking the "feel" of every transition is a one-line change.
+     - --ease-reveal is easeOutCirc, an evenly-distributed curve where
+       motion happens gradually across the full duration. Used for scroll
+       reveals where we want the element to "develop" rather than "snap".
+     - --ease-smooth is easeOutExpo, deceleration-heavy. Used for hover
+       lifts and button presses where snap-into-place feels right.
+     - --ease-soft is a slower in-out curve. Used for ambient transitions
+       like the header backdrop where both directions should feel equal. */
   :root {
+    --ease-reveal: cubic-bezier(0.33, 1, 0.68, 1);
     --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -125,21 +128,32 @@
   /* The "reveal on scroll" base state. JS in src/scripts/reveal.ts flips
      these to the visible state via IntersectionObserver. We start hidden
      in CSS so there's no flash-of-visible-content before JS hydrates.
-     1.1s duration with easeOutExpo: slow, soft landing. The translateY
-     starts at 24px so the movement is visible enough to read as motion,
-     not just a fade. */
+     Three things make this feel premium instead of snappy:
+       1. easeOutCirc distributes the motion evenly across the duration,
+          so a 1.4s reveal actually takes 1.4s to visually complete (the
+          previous easeOutExpo finished its visible motion in ~280ms even
+          though the duration said 1.1s).
+       2. The blur(8px) → blur(0) transition makes elements "develop into
+          focus" instead of materializing fully sharp. This is the trick
+          high-end sites (Linear, Vercel, Apple) use to make reveals feel
+          atmospheric rather than abrupt.
+       3. 20px translateY is just enough motion to read as movement
+          without becoming a slide. Subtle is the brand. */
   .reveal {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
+    filter: blur(8px);
     transition:
-      opacity 1.1s var(--ease-smooth),
-      transform 1.1s var(--ease-smooth);
-    will-change: opacity, transform;
+      opacity 1.4s var(--ease-reveal),
+      transform 1.4s var(--ease-reveal),
+      filter 1.4s var(--ease-reveal);
+    will-change: opacity, transform, filter;
   }
 
   .reveal.is-visible {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
   }
 
   /* Card hover glow: a soft electric halo that fades in on hover. The

@@ -199,8 +199,8 @@ const businessSchema = {
   },
 };
 
-// Join both schemas under @graph so a single <script> tag covers them.
-// Google's parser will index each @id separately.
+// Join both schemas under @graph so one JSON-LD block covers both.
+// Google's parser indexes each @id separately.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [personSchema, businessSchema],

@@ -41,11 +41,18 @@ export function initReveal(): void {
 
   const elements = document.querySelectorAll<HTMLElement>(".reveal:not(.is-visible)");
 
-  // Threshold 0.05 means "fire when 5% of the element is in view." Combined
-  // with the negative bottom rootMargin (-120px), this fires the reveal
-  // BEFORE the element is fully on-screen, so by the time the user's eye
-  // reaches the element it's already mid-animation. Animations that start
-  // after the user is staring at the element feel late and "sudden".
+  // rootMargin semantics, since I got this wrong the first pass:
+  //   POSITIVE bottom margin EXPANDS the viewport's trigger box downward,
+  //   so elements trigger BEFORE they're visible.
+  //   NEGATIVE bottom margin SHRINKS the viewport's trigger box, so
+  //   elements have to scroll well past the bottom edge before they fire,
+  //   which is the opposite of what we want.
+  //
+  // With rootMargin "0px 0px 200px 0px" and threshold 0, an element fires
+  // its reveal when its top edge is still 200px BELOW the viewport. By
+  // the time the user's eye reaches it, the animation is 60-80% done,
+  // which reads as "this content was already here" instead of "watch
+  // this content materialize".
   activeObserver = new IntersectionObserver(
     (entries, observer) => {
       entries.forEach((entry) => {
@@ -54,25 +61,24 @@ export function initReveal(): void {
         const target = entry.target as HTMLElement;
         const delay = Number(target.dataset.revealDelay ?? 0);
 
-        // Using setTimeout instead of a CSS transition-delay because the
-        // delay is per-element and dynamic from a data attribute. The
-        // 8ms minimum is a defense against weird race conditions where
-        // the class change and the observer-add happen in the same tick.
+        // setTimeout (not CSS transition-delay) because the delay is
+        // per-element and read from a data attribute. The 8ms minimum
+        // guards against race conditions where the class flip and the
+        // observer registration happen on the same tick.
         window.setTimeout(() => {
           target.classList.add("is-visible");
         }, Math.max(8, delay));
 
-        // Once revealed, stop watching. These animations are one-shot;
-        // re-firing on scroll-back would be distracting.
+        // One-shot. Re-firing on scroll-back would be distracting.
         observer.unobserve(target);
       });
     },
     {
-      threshold: 0.05,
-      // Negative bottom margin: trigger 120px BEFORE the element fully
-      // enters the viewport, so reveals are already animating when the
-      // user scrolls into them.
-      rootMargin: "0px 0px -120px 0px",
+      threshold: 0,
+      // Fire 200px BEFORE the element enters the viewport. Combined with
+      // the 1.4s reveal duration, the element finishes animating right
+      // around the time it becomes fully visible.
+      rootMargin: "0px 0px 200px 0px",
     }
   );
 
