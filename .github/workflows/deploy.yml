@@ -1,0 +1,74 @@
+# GitHub Actions workflow that builds the Astro site and deploys it to
+# GitHub Pages whenever main is updated. This is the standard Pages flow
+# from the Astro docs, tightened up a little.
+#
+# Two jobs: build (does the npm install + astro build) and deploy (takes
+# the artifact from build and publishes it to Pages). They run sequentially.
+#
+# The first time this runs, you'll need to enable Pages in the repo:
+# Settings -> Pages -> Source: GitHub Actions.
+
+name: Deploy to GitHub Pages
+
+on:
+  # Auto-deploy on every push to main. Pull requests don't deploy, they
+  # just get the build status check.
+  push:
+    branches: [main]
+  # Manual trigger for when you want to redeploy without a code change
+  # (e.g., after rotating an env var in repo secrets).
+  workflow_dispatch:
+
+# Pages permissions. These are scoped to just what's needed for deploy.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Cancel any in-flight runs on the same branch when a new push lands.
+# Avoids the "still deploying yesterday's commit" surprise.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          # Cache npm to speed up subsequent builds. First run takes ~90s,
+          # subsequent runs ~30s.
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro site
+        run: npm run build
+        env:
+          # If you set this as a repo secret, the contact form's endpoint
+          # gets baked into the production build. Without it, the form
+          # falls back to the placeholder in Contact.astro.
+          PUBLIC_FORMSPREE_ENDPOINT: ${{ secrets.PUBLIC_FORMSPREE_ENDPOINT }}
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

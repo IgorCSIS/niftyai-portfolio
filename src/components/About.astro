@@ -1,0 +1,103 @@
+---
+/**
+ * About section.
+ *
+ * Short, first-person, professional. Visitors who scrolled past the hero
+ * want to know whether this person is real and credible, not read a memoir.
+ * Two columns: a portrait placeholder on the left, the story + stats on
+ * the right. We use a CSS gradient placeholder for the portrait so the
+ * layout works before there's a real photo to drop in.
+ */
+
+// Small stats grid. Numbers feel concrete; rounded "years" and "projects"
+// are fine for v1 and easy to update as the count grows.
+const stats = [
+  { value: "8+", label: "projects shipped" },
+  { value: "2+", label: "years building with AI" },
+  { value: "100%", label: "code review pass rate" },
+];
+---
+
+<section id="about" class="relative scroll-mt-20 py-24 md:py-32">
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="grid gap-12 lg:grid-cols-[2fr_3fr] lg:items-center">
+      <!-- Portrait placeholder. The gradient + initials look intentional
+           rather than empty until you drop a real photo into /public and
+           swap this block for an <img>. -->
+      <div class="reveal relative">
+        <div
+          class="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl border border-ink-600 bg-gradient-to-br from-ink-700 via-ink-800 to-ink-900"
+        >
+          <!-- Replace this block with <img src="/me.jpg" alt="Igor Lima" /> -->
+          <div class="flex h-full w-full items-center justify-center">
+            <span class="font-display text-9xl font-bold text-electric-500/30">
+              IL
+            </span>
+          </div>
+          <!-- Decorative corner accent. Just a CSS triangle that hints at
+               a custom card frame without adding any real chrome. -->
+          <div
+            class="absolute right-4 top-4 h-3 w-3 rounded-full bg-electric-500 animate-pulse-glow"
+            aria-hidden="true"
+          ></div>
+        </div>
+        <!-- Floating "tag" beneath the portrait. Reads as a system status,
+             reinforcing the engineer-first identity. -->
+        <div
+          class="reveal mt-4 inline-flex items-center gap-2 font-mono text-xs text-paper-300"
+          data-reveal-delay="200"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-electric-500"></span>
+          status: building
+        </div>
+      </div>
+
+      <div>
+        <span class="reveal section-label">About me</span>
+        <h2
+          class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
+          data-reveal-delay="100"
+        >
+          A builder, not a buzzword merchant.
+        </h2>
+        <div class="reveal mt-6 space-y-4 text-paper-200" data-reveal-delay="200">
+          <p>
+            I'm a CS student deep in applied AI, learning by shipping. Most of
+            my work lives at the intersection of language models, automation,
+            and small custom web tools that solve one problem really well.
+          </p>
+          <p>
+            I write code that reads like a human wrote it. Heavy comments,
+            clear naming, sensible structure. The kind of project handoff
+            where the next person doesn't curse you out at 2am.
+          </p>
+          <p>
+            If you have a workflow that should be a script, a manual process
+            that should be an agent, or an idea that needs a tidy prototype to
+            pitch, that's the work I want.
+          </p>
+        </div>
+
+        <!-- Stats row. Each one is its own reveal with a cascading delay
+             so they ripple in from left to right after the paragraph lands. -->
+        <dl class="mt-10 grid grid-cols-3 gap-4">
+          {
+            stats.map((stat, i) => (
+              <div
+                class="reveal rounded-xl border border-ink-600 bg-ink-800/50 p-4"
+                data-reveal-delay={300 + i * 80}
+              >
+                <dt class="font-mono text-xs uppercase tracking-wider text-paper-300">
+                  {stat.label}
+                </dt>
+                <dd class="mt-1 font-display text-2xl font-bold text-electric-400 md:text-3xl">
+                  {stat.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>

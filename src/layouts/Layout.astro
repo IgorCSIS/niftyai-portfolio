@@ -1,0 +1,114 @@
+---
+/**
+ * Root layout for every page on the site.
+ *
+ * This is where the document shell lives: <head> meta, font preconnects,
+ * the always-visible header and footer, and Astro's View Transitions which
+ * give us native fade transitions between pages without any JS framework.
+ *
+ * Props let pages override the title and description, which matters for
+ * SEO and social sharing previews. The site name and base description
+ * are pulled from a single constant so we change them in one place.
+ */
+import "../styles/global.css";
+import { ViewTransitions } from "astro:transitions";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+
+const SITE_NAME = "NiftyAi";
+const SITE_TAGLINE = "AI and automation, built by Igor Lima";
+const DEFAULT_DESCRIPTION =
+  "Igor Lima builds AI agents, custom automations, and clean web tools for founders and small teams. Hire me to ship the AI piece you don't want to figure out yourself.";
+
+interface Props {
+  // Pages can override these. Title gets the site name suffix automatically
+  // so individual pages don't have to remember the format.
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${SITE_NAME} | ${SITE_TAGLINE}`,
+  description = DEFAULT_DESCRIPTION,
+} = Astro.props;
+
+// canonicalUrl is built from Astro.url so it stays correct across local dev
+// and the deployed GitHub Pages URL without us hard-coding the domain twice.
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#08090b" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph + Twitter cards. These make link previews look nice when
+         the site gets shared in Slack, X, LinkedIn, etc. The image is a
+         placeholder for now; we generate a real OG image once we have
+         brand assets settled. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Favicon. SVG favicons render crisp at any size and let us match the
+         site accent. The .ico fallback covers older browsers and pinned tabs. -->
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+
+    <!-- Font loading strategy: preconnect first to start the TCP handshake,
+         then load Inter + JetBrains Mono with display=swap so text renders
+         in the fallback font immediately and swaps in once the webfont arrives.
+         No flash of invisible text, minimal layout shift. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- View Transitions: opt-in to native cross-page transitions. Astro
+         handles the persistence and morphing; we just declare we want it. -->
+    <ViewTransitions />
+  </head>
+  <body class="relative">
+    <!-- Skip link for keyboard users so they can jump past the nav. Hidden
+         visually until focused; the .focus styles make it pop when tabbed to. -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded focus:bg-electric-500 focus:px-4 focus:py-2 focus:text-ink-900 focus:font-semibold"
+    >
+      Skip to content
+    </a>
+
+    <Header />
+
+    <main id="main" class="relative z-10">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Reveal-on-scroll script. Imported as a module so it's bundled and
+         tree-shaken. We load it deferred (Astro does this by default for
+         <script>) so it doesn't block first paint. -->
+    <script>
+      import { initReveal } from "../scripts/reveal";
+      initReveal();
+      // View Transitions swap the DOM without a full reload, so we need to
+      // re-initialize observers each time a new page is shown. The
+      // 'astro:page-load' event fires after every navigation, including
+      // the first one, which is exactly what we want.
+      document.addEventListener("astro:page-load", initReveal);
+    </script>
+  </body>
+</html>

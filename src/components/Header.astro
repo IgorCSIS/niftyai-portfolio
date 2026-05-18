@@ -1,0 +1,168 @@
+---
+/**
+ * Top navigation header.
+ *
+ * Fixed to the top, semi-transparent with a backdrop blur so content
+ * scrolling underneath stays readable but the nav still feels weightless.
+ * We rely on the browser's smooth scroll behavior (set on <html>) for the
+ * anchor-link jumps, so no JS needed here for the basic nav.
+ *
+ * Mobile: collapses to a hamburger that toggles a slide-down menu. We keep
+ * the menu logic in a tiny inline script rather than pulling in a UI lib.
+ */
+
+// Centralize the nav items so adding a new section later is a one-line edit.
+// Each item has a label (what users see) and a href (the anchor target).
+const navItems = [
+  { label: "Services", href: "#services" },
+  { label: "Work", href: "#portfolio" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
+];
+---
+
+<header
+  class="fixed top-0 left-0 right-0 z-40 border-b border-ink-700/50 bg-ink-900/70 backdrop-blur-md backdrop-saturate-150"
+>
+  <nav
+    class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4"
+    aria-label="Primary"
+  >
+    <!-- Brand wordmark. The dot before the name is a small visual signature
+         the eye picks up before the text resolves. Keeps the logo memorable
+         without needing a custom mark yet. -->
+    <a
+      href="#top"
+      class="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
+    >
+      <span
+        class="inline-block h-2 w-2 rounded-full bg-electric-500 transition-all duration-500 group-hover:scale-150 group-hover:shadow-[0_0_12px_theme(colors.electric.500)]"
+        aria-hidden="true"
+      ></span>
+      <span class="text-paper-100">
+        Nifty<span class="text-electric-500">Ai</span>
+      </span>
+    </a>
+
+    <!-- Desktop nav. Hidden on mobile; the hamburger picks up the slack there. -->
+    <ul class="hidden items-center gap-8 md:flex">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="text-sm text-paper-200 transition-colors duration-300 hover:text-electric-400"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a
+          href="#contact"
+          class="btn-primary inline-flex items-center rounded-full px-5 py-2 text-sm font-semibold text-ink-900"
+        >
+          Hire me
+        </a>
+      </li>
+    </ul>
+
+    <!-- Mobile menu button. aria-expanded gets toggled by the inline script
+         below so screen readers know whether the menu is open. -->
+    <button
+      id="menu-toggle"
+      type="button"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      aria-label="Toggle menu"
+      class="md:hidden inline-flex flex-col items-center justify-center gap-1.5 rounded p-2 text-paper-100"
+    >
+      <span class="block h-0.5 w-6 bg-current transition-transform duration-300"></span>
+      <span class="block h-0.5 w-6 bg-current transition-opacity duration-300"></span>
+      <span class="block h-0.5 w-6 bg-current transition-transform duration-300"></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu panel. Sits below the nav bar, slides down with a CSS
+       transform when toggled. We use max-height + transform so the
+       collapsed state doesn't take up layout space. -->
+  <div
+    id="mobile-menu"
+    class="md:hidden overflow-hidden border-t border-ink-700/50 bg-ink-900/95 max-h-0 transition-[max-height] duration-300 ease-out"
+  >
+    <ul class="flex flex-col gap-1 px-6 py-2">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="block py-3 text-paper-200 transition-colors hover:text-electric-400"
+              data-mobile-link
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li class="py-2">
+        <a
+          href="#contact"
+          class="btn-primary inline-flex w-full items-center justify-center rounded-full px-5 py-3 font-semibold text-ink-900"
+          data-mobile-link
+        >
+          Hire me
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<!-- Sentinel anchor target for the "scroll to top" wordmark click. Putting
+     this above the header rather than at body top means the smooth scroll
+     lands above the fixed header, not behind it. -->
+<span id="top" class="block h-0"></span>
+
+<!-- Spacer to push page content below the fixed header. Matches the
+     header height (py-4 + content + border = ~64px). -->
+<div aria-hidden="true" class="h-16"></div>
+
+<script>
+  /**
+   * Mobile menu toggle.
+   *
+   * We listen on the document so this still works after View Transition
+   * page swaps replace the DOM. The 'astro:page-load' rebinding handles
+   * the first paint plus every subsequent navigation.
+   */
+  function setupMobileMenu() {
+    const toggle = document.getElementById("menu-toggle");
+    const menu = document.getElementById("mobile-menu");
+    if (!toggle || !menu) return;
+
+    // We track open state in a closure variable so we don't have to read
+    // and re-parse the aria-expanded attribute on every click.
+    let isOpen = false;
+
+    const setOpen = (open: boolean) => {
+      isOpen = open;
+      toggle.setAttribute("aria-expanded", String(open));
+      // max-height of 24rem is plenty for the four nav items + CTA.
+      // Using max-height instead of height: auto lets us animate it; CSS
+      // can't animate to/from auto directly.
+      menu.style.maxHeight = open ? "24rem" : "0px";
+    };
+
+    toggle.addEventListener("click", () => setOpen(!isOpen));
+
+    // Close the menu when any nav link is clicked, otherwise the mobile
+    // panel stays open while the page is smooth-scrolling, which feels
+    // janky and covers the destination section.
+    menu.querySelectorAll<HTMLAnchorElement>("[data-mobile-link]").forEach((link) => {
+      link.addEventListener("click", () => setOpen(false));
+    });
+  }
+
+  setupMobileMenu();
+  document.addEventListener("astro:page-load", setupMobileMenu);
+</script>

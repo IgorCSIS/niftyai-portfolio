@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+.astro/
+
+# Environment files. Real values live in .env (never committed). Example
+# values and required keys live in .env.example which IS committed.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Editor / OS junk
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Lockfiles from other package managers (we use npm). If you switch
+# managers, remove the ones you don't use to avoid version drift.
+yarn.lock
+pnpm-lock.yaml

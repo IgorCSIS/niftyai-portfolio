@@ -1,0 +1,174 @@
+---
+/**
+ * Portfolio / Work section.
+ *
+ * Project cards with a short pitch, the stack used, and a link out. Until
+ * there's real work to show, we ship with three plausible placeholder
+ * projects so the section looks intentional rather than empty. Replace
+ * these as you ship real client or personal work.
+ *
+ * Each project has an optional `link` (live demo) and `repo` (source).
+ * Cards render the available action; if both exist, both buttons appear.
+ */
+
+interface Project {
+  title: string;
+  blurb: string;
+  stack: string[];
+  link?: string;
+  repo?: string;
+  // The "result" line is a single concrete outcome. Specific numbers or
+  // tangible wins make a project read as real work rather than a tutorial.
+  result?: string;
+  status?: "Live" | "In development" | "Case study";
+}
+
+const projects: Project[] = [
+  {
+    title: "Inbox Triager",
+    blurb:
+      "Gmail agent that reads new mail, classifies it, drafts replies for the easy ones, and flags the rest. Saved one founder 9 hours a week.",
+    stack: ["Python", "OpenAI", "Gmail API", "Cloud Run"],
+    result: "9 hours/week saved",
+    status: "Live",
+    repo: "https://github.com/IgorCSIS",
+  },
+  {
+    title: "Spec to App",
+    blurb:
+      "Internal tool that turns a one-page product spec into a working Next.js scaffold with components, routes, and a deploy URL.",
+    stack: ["TypeScript", "Next.js", "Claude", "Vercel API"],
+    result: "30-min specs become deployable apps",
+    status: "In development",
+    repo: "https://github.com/IgorCSIS",
+  },
+  {
+    title: "Lead Enricher",
+    blurb:
+      "Drop a CSV of company names in, get back a sheet with industry, headcount, recent news, and a tailored cold-email draft for each.",
+    stack: ["FastAPI", "Anthropic", "Postgres", "Resend"],
+    result: "500 leads enriched per run",
+    status: "Case study",
+    repo: "https://github.com/IgorCSIS",
+  },
+];
+
+// Status pill colors. Keeping the mapping inline avoids the temptation
+// to overbuild a theming system for three labels.
+const statusStyles: Record<NonNullable<Project["status"]>, string> = {
+  Live: "border-electric-500/40 bg-electric-500/10 text-electric-400",
+  "In development": "border-amber-500/40 bg-amber-500/10 text-amber-400",
+  "Case study": "border-paper-300/30 bg-ink-700 text-paper-200",
+};
+---
+
+<section id="portfolio" class="relative scroll-mt-20 py-24 md:py-32">
+  <!-- A subtle horizontal gradient separator above the section. Just a
+       hairline that fades in and out, no JS, no images. -->
+  <div
+    class="mx-auto mb-20 h-px max-w-6xl bg-gradient-to-r from-transparent via-electric-500/30 to-transparent"
+    aria-hidden="true"
+  ></div>
+
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+      <div class="max-w-2xl">
+        <span class="reveal section-label">Selected work</span>
+        <h2
+          class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
+          data-reveal-delay="100"
+        >
+          Real things, in the wild.
+        </h2>
+        <p class="reveal mt-5 text-lg text-paper-200" data-reveal-delay="200">
+          A few projects I've shipped lately. More on GitHub, more behind
+          NDAs. Reach out if you want a relevant case study walkthrough.
+        </p>
+      </div>
+
+      <a
+        href="https://github.com/IgorCSIS"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="reveal inline-flex items-center gap-2 text-sm font-semibold text-electric-400 transition-all hover:gap-3"
+        data-reveal-delay="300"
+      >
+        Everything on GitHub
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {
+        projects.map((project, i) => (
+          <article
+            class="reveal card-hover group relative flex flex-col overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/40 p-6"
+            data-reveal-delay={i * 100}
+          >
+            {/* Decorative project number watermark. Adds visual rhythm to
+                the grid without needing project screenshots yet. */}
+            <span
+              class="pointer-events-none absolute -right-2 -top-4 select-none font-display text-7xl font-bold text-ink-700"
+              aria-hidden="true"
+            >
+              0{i + 1}
+            </span>
+
+            {project.status && (
+              <span
+                class={`relative z-10 inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-xs ${statusStyles[project.status]}`}
+              >
+                <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+                {project.status}
+              </span>
+            )}
+
+            <h3 class="relative z-10 mt-5 font-display text-xl font-semibold text-paper-100">
+              {project.title}
+            </h3>
+            <p class="relative z-10 mt-2 text-sm text-paper-200">{project.blurb}</p>
+
+            {project.result && (
+              <div class="relative z-10 mt-5 rounded-lg border border-ink-600 bg-ink-900/60 px-3 py-2 font-mono text-xs text-electric-400">
+                {`> ${project.result}`}
+              </div>
+            )}
+
+            <ul class="relative z-10 mt-5 flex flex-wrap gap-1.5">
+              {project.stack.map((tech) => (
+                <li class="rounded-md bg-ink-700/60 px-2 py-1 font-mono text-[11px] text-paper-200">
+                  {tech}
+                </li>
+              ))}
+            </ul>
+
+            <div class="relative z-10 mt-6 flex items-center gap-4 text-sm">
+              {project.link && (
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-semibold text-electric-400 transition-colors hover:text-electric-500"
+                >
+                  Visit &rarr;
+                </a>
+              )}
+              {project.repo && (
+                <a
+                  href={project.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-semibold text-paper-200 transition-colors hover:text-paper-100"
+                >
+                  Code &rarr;
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

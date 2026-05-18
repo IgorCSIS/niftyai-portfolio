@@ -1,0 +1,197 @@
+---
+/**
+ * Services section: the gigs people can hire me for.
+ *
+ * Each service is a card with a title, a short pitch, a feature list, and a
+ * "starting at" price tag. The "starting at" framing matters: it sets a
+ * floor without committing to a fixed price for what's almost always
+ * custom work. Anchor pricing + a real "let's talk" path beats a calculator.
+ *
+ * The data lives in one array so updates are a single-file edit. When you
+ * want to A/B test pricing or rename a service, you change one line.
+ */
+
+// Tip for later: if this list grows past 8, split into tabs or pull it
+// into a /services page of its own. Six cards is about the limit before
+// the section feels like a SKU dump.
+const services = [
+  {
+    title: "Custom AI Agents",
+    pitch: "An agent that does the boring part of your job. Built for one workflow, tuned, shipped.",
+    features: [
+      "OpenAI / Anthropic / open-source models",
+      "Tool use, RAG, memory if needed",
+      "Production-ready, not a notebook",
+    ],
+    price: "$1,200",
+    icon: "agent",
+  },
+  {
+    title: "Workflow Automation",
+    pitch: "The thing your team does 40 times a week, but a script does it in 30 seconds instead.",
+    features: [
+      "Python, n8n, Zapier, or custom",
+      "API integrations and webhooks",
+      "Scheduled jobs with monitoring",
+    ],
+    price: "$600",
+    icon: "automate",
+  },
+  {
+    title: "AI-Powered Web Apps",
+    pitch: "A small, sharp web app with AI under the hood. Real product, not a demo.",
+    features: [
+      "Next.js or FastAPI + React",
+      "Auth, payments, deployable on day one",
+      "Clean UI you won't be embarrassed by",
+    ],
+    price: "$2,500",
+    icon: "web",
+  },
+  {
+    title: "Data + LLM Pipelines",
+    pitch: "Move your data through a language model, structure the output, drop it where you need it.",
+    features: [
+      "Document parsing and extraction",
+      "Batch summarization and classification",
+      "CSV / database / Notion / Sheets out",
+    ],
+    price: "$900",
+    icon: "pipeline",
+  },
+  {
+    title: "Prototype in a Week",
+    pitch: "Fixed scope, fixed price, working demo in seven days. Perfect for pitching investors or testing an idea.",
+    features: [
+      "One core feature, polished",
+      "Hosted on a real URL",
+      "You get the code, no lock-in",
+    ],
+    price: "$1,800",
+    icon: "rocket",
+  },
+  {
+    title: "Consult and Pair",
+    pitch: "Bring me into a working session. We sketch the architecture, write the hard part, you walk away unstuck.",
+    features: [
+      "60 or 90 minute sessions",
+      "Architecture, prompts, or code review",
+      "Recorded summary + follow-up notes",
+    ],
+    price: "$120",
+    icon: "chat",
+  },
+];
+
+// Tiny inline icon set. Drawing them inline keeps the bundle small and
+// lets us color them with currentColor for hover states.
+const icons: Record<string, string> = {
+  agent:
+    "M12 2a4 4 0 0 0-4 4v2H5a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-9a3 3 0 0 0-3-3h-3V6a4 4 0 0 0-4-4zm-2 4a2 2 0 1 1 4 0v2h-4V6zm-1 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm6 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z",
+  automate:
+    "M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z",
+  web:
+    "M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5zm2 4h14M8 5v2M5 14h6M14 14h5M14 18h5",
+  pipeline:
+    "M3 7h6l3 3h9M3 17h6l3-3h9M6 7v10M21 10v4",
+  rocket:
+    "M14 3l7 7-9 11-7-7 9-11zM5 19l-2 2M9 15l-3 3M16 8l1.5 1.5",
+  chat:
+    "M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-4 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z",
+};
+---
+
+<section id="services" class="relative scroll-mt-20 py-24 md:py-32">
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="max-w-2xl">
+      <span class="reveal section-label">What I build</span>
+      <h2
+        class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
+        data-reveal-delay="100"
+      >
+        Pick a project, get a price.
+      </h2>
+      <p class="reveal mt-5 text-lg text-paper-200" data-reveal-delay="200">
+        Everything below is a real, scoped engagement. Prices are starting
+        points based on typical complexity. We talk, I send a fixed quote,
+        you say go.
+      </p>
+    </div>
+
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        services.map((service, i) => (
+          <article
+            class="reveal card-hover group flex flex-col rounded-2xl border border-ink-600 bg-ink-800/40 p-6 backdrop-blur-sm"
+            data-reveal-delay={i * 80}
+          >
+            <div class="flex items-start justify-between">
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-xl border border-ink-600 bg-ink-900 text-electric-400 transition-colors duration-300 group-hover:border-electric-500/50"
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d={icons[service.icon]} />
+                </svg>
+              </div>
+              <div class="text-right">
+                <div class="font-mono text-xs uppercase tracking-wider text-paper-300">
+                  starting at
+                </div>
+                <div class="font-display text-2xl font-bold text-electric-400">
+                  {service.price}
+                </div>
+              </div>
+            </div>
+
+            <h3 class="mt-6 font-display text-xl font-semibold text-paper-100">
+              {service.title}
+            </h3>
+            <p class="mt-2 text-sm text-paper-200">{service.pitch}</p>
+
+            <ul class="mt-5 space-y-2 text-sm text-paper-200">
+              {service.features.map((feature) => (
+                <li class="flex items-start gap-2">
+                  <svg
+                    class="mt-1 flex-shrink-0 text-electric-500"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12l5 5L20 7" />
+                  </svg>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="#contact"
+              class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-electric-400 transition-all duration-300 group-hover:gap-3"
+            >
+              Start a project
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,94 @@
+---
+/**
+ * Hero section.
+ *
+ * The first thing every visitor sees, so it has to do three things fast:
+ * 1. Say who you are (NiftyAi by Igor Lima).
+ * 2. Say what you do (AI + automation for founders and small teams).
+ * 3. Give them somewhere to go (primary CTA to services, secondary to work).
+ *
+ * The animated background is two layered radial gradients that drift very
+ * slowly. It reads as "alive" without distracting from the headline.
+ */
+---
+
+<section class="relative isolate overflow-hidden">
+  <!-- Ambient gradient orbs. Two of them, drifting in opposite directions,
+       blurred heavily so they read as atmosphere rather than shapes. -->
+  <div
+    class="absolute -top-32 left-1/4 -z-10 h-[420px] w-[420px] rounded-full bg-electric-500/15 blur-3xl"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="absolute right-0 top-40 -z-10 h-[380px] w-[380px] rounded-full bg-electric-400/10 blur-3xl"
+    aria-hidden="true"
+  ></div>
+
+  <div class="mx-auto max-w-6xl px-6 pt-24 pb-32 md:pt-32 md:pb-44">
+    <!-- The little "available for hire" pill above the headline is the kind
+         of detail that tells visitors this person is approachable. The
+         pulsing dot is hand-crafted CSS, not an image, so it stays crisp. -->
+    <div class="reveal mb-8 inline-flex items-center gap-2 rounded-full border border-electric-500/30 bg-electric-500/5 px-4 py-1.5 text-xs font-medium text-electric-400">
+      <span class="relative flex h-2 w-2">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-electric-400 opacity-60"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-electric-500"></span>
+      </span>
+      Available for new projects
+    </div>
+
+    <h1
+      class="reveal max-w-4xl font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl"
+      data-reveal-delay="120"
+    >
+      <span class="text-paper-100">I build the </span>
+      <span class="text-gradient">AI piece</span>
+      <span class="text-paper-100"> you don't want to figure out yourself.</span>
+    </h1>
+
+    <p
+      class="reveal mt-8 max-w-2xl text-lg leading-relaxed text-paper-200 md:text-xl"
+      data-reveal-delay="280"
+    >
+      I'm Igor Lima. I ship custom AI agents, internal automations, and tidy
+      web tools for founders and small teams who need the result, not the
+      tutorial. Clean code, clear pricing, no buzzwords.
+    </p>
+
+    <div class="reveal mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center" data-reveal-delay="440">
+      <a
+        href="#services"
+        class="btn-primary inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-ink-900 shadow-lg shadow-electric-500/20"
+      >
+        See what I can build
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 5l7 7-7 7" />
+        </svg>
+      </a>
+      <a
+        href="#portfolio"
+        class="inline-flex items-center gap-2 rounded-full border border-ink-600 px-7 py-3.5 font-semibold text-paper-100 transition-all duration-300 hover:border-electric-500 hover:text-electric-400"
+      >
+        View recent work
+      </a>
+    </div>
+
+    <!-- Trust signal row. A small list of capabilities or stack badges
+         under the CTAs gives skimmers a visual cue that this isn't a
+         pitch landing page; there's substance. -->
+    <div
+      class="reveal mt-16 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs text-paper-300"
+      data-reveal-delay="600"
+    >
+      <span class="text-electric-400">{`>`}</span>
+      <span>Python</span>
+      <span class="text-ink-500">/</span>
+      <span>TypeScript</span>
+      <span class="text-ink-500">/</span>
+      <span>OpenAI &amp; Anthropic APIs</span>
+      <span class="text-ink-500">/</span>
+      <span>n8n / Zapier</span>
+      <span class="text-ink-500">/</span>
+      <span>FastAPI / Next.js</span>
+    </div>
+  </div>
+</section>

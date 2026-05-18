@@ -1,0 +1,215 @@
+/*
+ * Global stylesheet for the NiftyAi site.
+ *
+ * The structure here matters: Tailwind's @tailwind directives must come first
+ * so the @layer additions below can override or extend base styles cleanly.
+ * Anything we want available across the whole site (font smoothing, scroll
+ * behavior, focus rings) lives in the base layer. Component-y bits like the
+ * gradient text effect live in the components layer so they compose nicely
+ * with Tailwind utilities.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* The cubic-bezier curve here is the "smooth ease-out" you'll see all over
+     the site. Pulling it into a CSS variable means any place we want the same
+     "feel" (button transitions, card hovers, scroll reveals) can reference
+     the same value without re-typing the magic numbers. */
+  :root {
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  html {
+    /* Smooth in-page anchor scrolls (nav links jumping to sections). The
+       'scroll-padding-top' compensates for the fixed header so the section
+       heading doesn't get hidden underneath it after a jump. */
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    background-color: theme("colors.ink.900");
+    color: theme("colors.paper.100");
+    font-family: theme("fontFamily.sans");
+    /* Better text rendering on macOS/Linux. Windows mostly ignores this
+       but the macOS rendering improvement is worth the extra line. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    /* The body itself gets a subtle radial vignette so the dark feels
+       lit rather than flat. This is one of those small touches that
+       takes a "dark mode template" to "designed dark site." */
+    background-image:
+      radial-gradient(
+        ellipse 60rem 40rem at 50% -10rem,
+        rgba(62, 224, 187, 0.08),
+        transparent 70%
+      );
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+
+  /* Selection color matches the accent so the brand carries even into
+     small details like highlighting text. */
+  ::selection {
+    background-color: theme("colors.electric.500");
+    color: theme("colors.ink.900");
+  }
+
+  /* Focus rings need to be visible (a11y) but not jarring on a dark theme.
+     A glowing electric outline reads as deliberate rather than default-browser. */
+  :focus-visible {
+    outline: 2px solid theme("colors.electric.500");
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Honor users who've asked their OS to reduce motion. We turn off the
+     animations entirely instead of just shortening them, because folks who
+     set this preference usually have vestibular issues that even fast
+     animations can trigger. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* The grain overlay sits on the body via a fixed pseudo-element so it
+     doesn't scroll with content. It's an SVG noise pattern encoded as a
+     data URL to avoid an extra network request. 3% opacity is enough to
+     read as texture without becoming visible noise. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* Gradient text used on hero headlines and section labels. Animating the
+     background position gives a slow, ambient shimmer that doesn't fight
+     for attention. */
+  .text-gradient {
+    background: linear-gradient(
+      120deg,
+      theme("colors.paper.100") 0%,
+      theme("colors.electric.400") 50%,
+      theme("colors.paper.100") 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 8s linear infinite;
+  }
+
+  /* The "reveal on scroll" base state. JS in src/scripts/reveal.ts flips
+     these to the visible state via IntersectionObserver. We start hidden
+     in CSS so there's no flash-of-visible-content before JS hydrates. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.8s var(--ease-smooth),
+      transform 0.8s var(--ease-smooth);
+    will-change: opacity, transform;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Card hover glow: a soft electric halo that fades in on hover. Using
+     a box-shadow with a large blur on the accent color costs less than
+     animating a gradient and looks cleaner on different backgrounds. */
+  .card-hover {
+    transition:
+      transform 0.4s var(--ease-smooth),
+      box-shadow 0.4s var(--ease-smooth),
+      border-color 0.4s var(--ease-smooth);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    border-color: theme("colors.electric.500");
+    box-shadow:
+      0 0 0 1px rgba(62, 224, 187, 0.2),
+      0 20px 40px -20px rgba(62, 224, 187, 0.25);
+  }
+
+  /* Button primary: the main CTA style. We keep the actual class small
+     and compose with Tailwind in components, but the inner gradient and
+     glow need real CSS to look right at scale. */
+  .btn-primary {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      120deg,
+      theme("colors.electric.500"),
+      theme("colors.electric.400")
+    );
+    transition: opacity 0.4s var(--ease-smooth);
+  }
+
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    background: linear-gradient(
+      120deg,
+      theme("colors.electric.400"),
+      theme("colors.electric.500")
+    );
+    transition: opacity 0.4s var(--ease-smooth);
+  }
+
+  .btn-primary:hover::after {
+    opacity: 1;
+  }
+
+  /* Section heading label: small uppercase mono tag above section titles.
+     Reads as deliberate and "designed," like the hashes in terminal prompts. */
+  .section-label {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: theme("colors.electric.400");
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-label::before {
+    content: "";
+    width: 1.5rem;
+    height: 1px;
+    background-color: theme("colors.electric.400");
+    display: inline-block;
+  }
+}
