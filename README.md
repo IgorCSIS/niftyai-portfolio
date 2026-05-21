@@ -1,78 +1,98 @@
 # NiftyAi
 
-Personal portfolio and services site for Igor Lima. AI agents, automations, and small web tools, packaged as scoped engagements people can hire me for.
+> AI agents, automation, and small web tools by Igor Lima.
 
-Built with [Astro](https://astro.build) + [Tailwind CSS](https://tailwindcss.com), deployed free on GitHub Pages via GitHub Actions.
+![NiftyAi banner](public/images/og-image.png)
+
+**[Live site](https://igorcsis.github.io/niftyai-portfolio/)**
+
+A personal portfolio and services site. Built as a single-page Astro app, deployed for free on GitHub Pages via GitHub Actions. Dark theme, scroll-reveal animations, fully responsive.
 
 ## Stack
 
-- **Astro 4** for the static site generator. Ships near-zero JS by default, which is exactly what a portfolio needs.
-- **Tailwind CSS 3** for styling, with a small custom palette in `tailwind.config.mjs`.
-- **TypeScript** for the small bits of client JS (scroll reveals, mobile nav).
-- **Formspree** as the contact-form backend so we don't need to host one.
-- **GitHub Pages** for hosting. Custom domain later if we want one.
+| Layer | Choice |
+|---|---|
+| Static site generator | Astro 4 |
+| Styling | Tailwind CSS 3 |
+| Typed scripts | TypeScript |
+| Contact form | Formspree (free tier) |
+| Hosting | GitHub Pages |
+| CI / Deploy | GitHub Actions |
 
-## Local development
+## Run locally
 
-You need Node 18+ installed (Node 22 is what this was built on).
+Requires Node 18 or newer (built on Node 22).
 
 ```powershell
 # Install dependencies
 npm install
 
-# Copy the env example and fill in your Formspree endpoint
+# Copy the env template and add your Formspree endpoint
 Copy-Item .env.example .env
-# then edit .env
+# then edit .env in your editor
 
-# Start the dev server at http://localhost:4321
+# Start dev server at http://localhost:4321/niftyai-portfolio
 npm run dev
 ```
 
-The dev server hot-reloads on save. Tailwind classes purge correctly during the production build, so you can use any utility classes you want without worrying about bundle size.
+Hot reload is on by default. Tailwind purges unused classes during the production build, so utility-heavy markup doesn't bloat the bundle.
 
 ## Project layout
 
 ```
 niftyai-portfolio/
-  public/              static assets served as-is (favicon, images)
-  src/
-    components/        Astro components, one per section
-    layouts/           Layout.astro: doc shell, head, header, footer
-    pages/             routes; index.astro is the home page
-    scripts/           tiny client TS (reveal.ts)
-    styles/            global.css with Tailwind layers and custom CSS
-  astro.config.mjs     Astro + Tailwind config; sets the site + base path
-  tailwind.config.mjs  palette, fonts, custom animations
-  .github/workflows/   GitHub Actions deploy pipeline
+├── public/                # static assets (favicon, brand images, robots.txt)
+├── src/
+│   ├── components/        # section components (Hero, Services, etc.)
+│   ├── layouts/           # Layout.astro: document shell + meta + JSON-LD
+│   ├── pages/             # routes; index.astro is the home page
+│   ├── scripts/           # client-side TS (reveal observer)
+│   └── styles/            # global.css with custom CSS layers
+├── astro.config.mjs       # Astro + Tailwind + sitemap config
+├── tailwind.config.mjs    # palette, fonts, custom animations
+└── .github/workflows/     # GitHub Actions deploy pipeline
 ```
 
 ## Editing content
 
-Everything that's likely to change lives in data arrays at the top of each component, not scattered through JSX:
+Content lives in data arrays at the top of each component, not scattered through markup.
 
-- Services: `src/components/Services.astro`, the `services` array
-- Portfolio projects: `src/components/Portfolio.astro`, the `projects` array
-- Nav links: `src/components/Header.astro`, the `navItems` array
-- Socials: `src/components/Footer.astro`, the `socials` array
-
-To swap the portrait placeholder for a real photo, drop your image into `public/` and replace the `IL` initials block in `About.astro` with an `<img>` tag.
+| What | Where |
+|---|---|
+| Services and pricing | `src/components/Services.astro` → `services` |
+| Portfolio projects | `src/components/Portfolio.astro` → `projects` |
+| Nav links | `src/components/Header.astro` → `navItems` |
+| Social icons | `src/components/Footer.astro` → `socials` |
+| Meta + schema | `src/layouts/Layout.astro` |
 
 ## Deploy
 
-The site auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy.yml`. After the first push, enable Pages in repo settings:
+Every push to `main` triggers `.github/workflows/deploy.yml`, which builds the site and publishes to GitHub Pages.
 
-1. Go to **Settings -> Pages**
-2. Under **Source**, pick **GitHub Actions**
-3. Push to `main`. The Actions run takes about 90 seconds.
+Before the first deploy works, enable Pages in repo settings:
 
-Live URL after the first successful deploy:
+1. **Settings → Pages**
+2. **Source:** GitHub Actions
+3. Save, then push to `main` (or re-run the latest workflow)
+
+Production URL:
 
 ```
-https://igorcsis.github.io/niftyai-portfolio
+https://igorcsis.github.io/niftyai-portfolio/
 ```
 
-If/when you point a custom domain at the site, update the `site` value in `astro.config.mjs` to the apex and remove the `base`.
+To point a custom domain at the site later, update `site` in `astro.config.mjs` to the apex and drop the `base` value.
+
+## SEO
+
+The site ships with:
+
+- JSON-LD structured data (Person + ProfessionalService schemas) for rich snippets
+- Open Graph + Twitter card meta for clean link previews
+- Auto-generated sitemap via `@astrojs/sitemap`
+- `robots.txt` with explicit allow for GPTBot, ClaudeBot, Google-Extended
+- Geo meta tags for local search signals
 
 ## License
 
-MIT, see `LICENSE`.
+MIT. See [LICENSE](LICENSE).

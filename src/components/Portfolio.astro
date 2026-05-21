@@ -23,13 +23,22 @@ interface Project {
   status?: "Live" | "In development" | "Case study" | "Concept";
 }
 
-// These are concepts I'm actively prototyping, not shipped client work.
-// Each one ties back to my real story: the retail lead router is born
-// out of running mattress stores, the watchdog plays my optimization
-// obsession, and the multilingual pipeline leans on my trilingual moat.
-// As real engagements ship, swap these out (or move them to a separate
-// "Concepts" section) and add case studies above.
+// One shipped product (NiftyStats, live) plus two concepts in active
+// development. As more projects ship, the "In development" entries either
+// flip to "Live" with real links or get archived. Order matters here:
+// Live projects always lead, concepts trail, so the eye lands on the
+// proof-of-shipping first.
 const projects: Project[] = [
+  {
+    title: "NiftyStats",
+    blurb:
+      "Browser-native statistical analysis. Drop in a CSV, get descriptives, distributions, and correlations rendered in the page. Pyodide runs the Python in WebAssembly so your data never leaves your machine. No server, no signup, no email gate.",
+    stack: ["Vite", "React", "Pyodide", "Pandas"],
+    result: "Zero-backend stats, full Python power",
+    status: "Live",
+    link: "https://igorcsis.github.io/niftystats/",
+    repo: "https://github.com/IgorCSIS/niftystats",
+  },
   {
     title: "Retail Lead Router",
     blurb:
@@ -37,15 +46,6 @@ const projects: Project[] = [
     stack: ["Python", "OpenAI", "Twilio", "Postgres"],
     result: "Aims to handle 80% of first-touch traffic",
     status: "In development",
-    repo: "https://github.com/IgorCSIS",
-  },
-  {
-    title: "Operator's Watchdog",
-    blurb:
-      "Small-business monitoring bot that watches the boring metrics: inventory thresholds, no-show patterns, expense anomalies, lead conversion dips. Pings the owner only when something's actually off, not on every tick.",
-    stack: ["FastAPI", "Anthropic", "Postgres", "Resend"],
-    result: "Designed for owner-operators, not analysts",
-    status: "Concept",
     repo: "https://github.com/IgorCSIS",
   },
   {
@@ -80,17 +80,17 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
   <div class="mx-auto max-w-6xl px-6">
     <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
       <div class="max-w-2xl">
-        <span class="reveal section-label">What I'm building</span>
+        <span class="reveal section-label">Selected work</span>
         <h2
           class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
           data-reveal-delay="100"
         >
-          Concepts I'm prototyping right now.
+          Shipped, and more on the way.
         </h2>
         <p class="reveal mt-5 text-lg text-paper-200" data-reveal-delay="200">
-          I'm being honest: these aren't shipped client work yet. They're
-          the things I'm building to prove out the services on this site.
-          Want one built for your business instead? That's how it works.
+          One live product you can try right now, plus two projects in
+          active development. Want something like these built for your
+          business? That's the offer.
         </p>
       </div>
 
