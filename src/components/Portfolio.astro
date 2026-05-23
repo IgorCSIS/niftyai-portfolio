@@ -23,11 +23,11 @@ interface Project {
   status?: "Live" | "In development" | "Case study" | "Concept";
 }
 
-// One shipped product (NiftyStats, live) plus two concepts in active
-// development. As more projects ship, the "In development" entries either
-// flip to "Live" with real links or get archived. Order matters here:
-// Live projects always lead, concepts trail, so the eye lands on the
-// proof-of-shipping first.
+// Two shipped products lead (NiftyStats and NiftyVid, both live), one
+// concept in active development trails. As more projects ship, the
+// "In development" entries either flip to "Live" with real links or get
+// archived. Order matters: Live first so the eye lands on proof of
+// shipping, concept trails.
 const projects: Project[] = [
   {
     title: "NiftyStats",
@@ -40,20 +40,28 @@ const projects: Project[] = [
     repo: "https://github.com/IgorCSIS/niftystats",
   },
   {
+    // NiftyVid is the proof that I can wire a real AI model into a
+    // production-feeling product without standing up a server. Cloudflare
+    // Worker proxies a public Hugging Face Space running Wan 2.2 (same
+    // model class as Runway Gen-3 and Kling, but open source). Keywords
+    // in the blurb are intentional ("image to video", "Wan 2.2", "AI
+    // video generator") so the page picks up search traffic from people
+    // hunting that exact stack.
+    title: "NiftyVid",
+    blurb:
+      "Image-to-video AI generator in the browser. Drop a photo, write a short motion prompt, get a 5-second MP4 back. Built on Wan 2.2, the open-source answer to Runway Gen-3 and Kling. Static site on GitHub Pages, Cloudflare Worker proxying a public Hugging Face Space. No signup, no API keys, no upload limits.",
+    stack: ["Astro", "Tailwind", "Cloudflare Workers", "Wan 2.2"],
+    result: "Free AI video, fully in the browser",
+    status: "Live",
+    link: "https://igorcsis.github.io/nifty-vid/",
+    repo: "https://github.com/IgorCSIS/nifty-vid",
+  },
+  {
     title: "Retail Lead Router",
     blurb:
       "Agent that reads inbound store leads (financing question, walk-in interest, B2B, support), routes each to the right channel, and drafts the first reply. Born out of running mattress stores myself, so the categories aren't guessed.",
     stack: ["Python", "OpenAI", "Twilio", "Postgres"],
     result: "Aims to handle 80% of first-touch traffic",
-    status: "In development",
-    repo: "https://github.com/IgorCSIS",
-  },
-  {
-    title: "Multilingual Content Pipeline",
-    blurb:
-      "One source post in, EN/PT/ES variants out across email, social, and blog. Tone gets adjusted per market, not just translated. For founders selling into the US plus Latin America who don't want to staff three content teams.",
-    stack: ["TypeScript", "Claude", "Buffer API", "Cloud Run"],
-    result: "One brief, three markets, same week",
     status: "In development",
     repo: "https://github.com/IgorCSIS",
   },
@@ -88,9 +96,9 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
           Shipped, and more on the way.
         </h2>
         <p class="reveal mt-5 text-lg text-paper-200" data-reveal-delay="200">
-          One live product you can try right now, plus two projects in
-          active development. Want something like these built for your
-          business? That's the offer.
+          Two live products you can try right now, plus one in active
+          development. Want something like these built for your business?
+          That's the offer.
         </p>
       </div>
 
