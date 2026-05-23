@@ -286,4 +286,146 @@
     background-color: theme("colors.electric.400");
     display: inline-block;
   }
+
+  /* Cursor-reactive ambient surface. The hero gets a radial gradient that
+     follows the mouse, anchored via CSS custom properties --mx and --my
+     written from a tiny JS listener (src/scripts/cursor-glow.ts). When the
+     listener hasn't fired yet (or on touch devices), the gradient sits
+     centered at 50% 50% and still looks intentional.
+
+     Why CSS variables instead of redrawing the gradient in JS each frame:
+     CSS variables changes get GPU-composited by the browser without a
+     style recalc cascade, so we get butter-smooth tracking with no JS
+     animation loop. The listener fires on mousemove and writes two values.
+     That's the whole effect. */
+  .cursor-glow {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .cursor-glow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      600px circle at var(--mx, 50%) var(--my, 30%),
+      rgba(62, 224, 187, 0.12),
+      transparent 60%
+    );
+    /* Slight delay so the glow lags the cursor by a hair. Lagging
+       gradients read as "weighted" instead of "snapped to mouse," which
+       is the difference between a polished site and a tech demo. */
+    transition: background 0.18s var(--ease-soft);
+  }
+
+  /* Magnetic button: a 1px scale + lift on hover, plus a flowing border
+     accent. Compose this on top of any anchor or button. It doesn't
+     replace .btn-primary, it stacks with it.
+
+     The "magnetic" part is purely visual (no JS pointer tracking) because
+     true magnetic-pull effects need a per-element listener and become
+     fidgety on small screens. This version reads as magnetic without the
+     cost: a tiny scale-up, a soft glow extending past the button edge,
+     and a border that brightens. */
+  .btn-magnetic {
+    position: relative;
+    transition:
+      transform 0.5s var(--ease-smooth),
+      box-shadow 0.5s var(--ease-smooth),
+      border-color 0.4s var(--ease-soft);
+  }
+
+  .btn-magnetic:hover {
+    transform: translateY(-2px) scale(1.015);
+  }
+
+  /* Animated gradient border: rotates a conic gradient inside a card so
+     the edge looks alive. We do this with a pseudo-element and a mask so
+     the rotating gradient only shows AT the border, not bleeding into
+     the card body. Used sparingly. Applied to the lead "Live" card so
+     it stands out as the proof point. */
+  .border-flow {
+    position: relative;
+  }
+
+  .border-flow::before {
+    content: "";
+    position: absolute;
+    /* inset:0 instead of negative inset because the parent card uses
+       overflow-hidden, which would clip any pseudo content extending
+       beyond the border box. inset:0 keeps the gradient inside the
+       card, and the mask below cuts it down to a glowing ring at
+       the edge. */
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--angle, 0deg),
+      transparent 0deg,
+      rgba(62, 224, 187, 0.45) 90deg,
+      transparent 180deg,
+      rgba(62, 224, 187, 0.25) 270deg,
+      transparent 360deg
+    );
+    animation: border-spin 8s linear infinite;
+    /* This trick is what makes the conic gradient look like a glowing
+       border: a mask cuts out everything except a 1px ring at the edge. */
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    padding: 1px;
+  }
+
+  @keyframes border-spin {
+    to {
+      --angle: 360deg;
+    }
+  }
+
+  /* Tells the browser --angle is a real angle, not a string. Without this
+     the keyframe interpolation falls back to discrete steps and the border
+     jitters instead of rotating smoothly. */
+  @property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  /* Display headlines: tighter tracking and leading than the Tailwind
+     defaults. Founder-engineer sites uniformly use -0.02em to -0.03em on
+     large headlines because it reads more confident than wide-tracked
+     display copy. */
+  .display-h1 {
+    font-family: theme("fontFamily.display");
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+  }
+
+  .display-h2 {
+    font-family: theme("fontFamily.display");
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+
+  /* Inline mono "tag" used inline with copy to flag stack items, status
+     markers, etc. Reads as a terminal token in flow. */
+  .tag-mono {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 0.375rem;
+    border: 1px solid theme("colors.ink.600");
+    background-color: rgba(8, 9, 11, 0.6);
+    font-family: theme("fontFamily.mono");
+    font-size: 0.7rem;
+    color: theme("colors.paper.200");
+  }
 }

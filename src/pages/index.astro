@@ -12,13 +12,24 @@ import Hero from "@components/Hero.astro";
 import About from "@components/About.astro";
 import Services from "@components/Services.astro";
 import Portfolio from "@components/Portfolio.astro";
+import CurrentlyBuilding from "@components/CurrentlyBuilding.astro";
 import Contact from "@components/Contact.astro";
 ---
 
+<!-- Order matters for the read.
+     Hero: punch the positioning in 5 seconds.
+     Services: what I sell, with prices, no hide-and-seek.
+     Portfolio: proof I ship.
+     CurrentlyBuilding: proof I'm still shipping (vs. portfolio frozen in time).
+     About: the human story for visitors who scrolled this far.
+     Contact: the conversion.
+     The audit's "reduce cognitive load" point applies here: each section
+     is doing one job, and the order maps to the buyer's question funnel. -->
 <Layout>
   <Hero />
   <Services />
   <Portfolio />
+  <CurrentlyBuilding />
   <About />
   <Contact />
 </Layout>

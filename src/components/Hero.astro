@@ -20,7 +20,12 @@
 const wordmarkUrl = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.replace(/\/\//g, "/");
 ---
 
-<section class="relative isolate overflow-hidden">
+<!-- The `cursor-glow` class wires up a radial gradient that follows the
+     mouse. Logic in src/scripts/cursor-glow.ts writes --mx/--my CSS
+     variables on mousemove. The effect degrades to a static centered
+     glow on touch devices or before the script runs, so the section
+     always looks intentional. -->
+<section class="cursor-glow relative isolate overflow-hidden" data-cursor-glow>
   <!-- Ambient gradient orbs. Two of them, blurred heavily, drifting in
        opposite directions. Reads as atmosphere, not shapes. -->
   <div
@@ -36,8 +41,7 @@ const wordmarkUrl = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.re
        low opacity with a slight desaturation so it reads as texture, not
        a competing element. mix-blend-mode: luminosity strips the residual
        white tint and lets the chrome metallic shine show through against
-       the dark page. The rotation gives it just enough motion that the
-       image doesn't sit flat. -->
+       the dark page. -->
   <img
     src={wordmarkUrl}
     alt=""
@@ -60,30 +64,41 @@ const wordmarkUrl = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.re
       Taking on new projects this quarter
     </div>
 
+    {/* New headline. Two sentences instead of one because the rhythm hits
+        harder: the first establishes the category ("operator-grade AI"
+        is a moat phrase Igor can defend with his actual background), the
+        second picks a fight ("not to demo" calls out the industry's
+        biggest weakness, and we have two shipped products to back the
+        claim up). The .display-h1 class gives us tighter tracking and
+        leading than Tailwind defaults, and that single change is what
+        makes large headlines read "founder site" instead of "dev blog." */}
     <h1
-      class="reveal max-w-4xl font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl"
+      class="reveal display-h1 max-w-4xl text-5xl font-bold md:text-7xl"
       data-reveal-delay="120"
     >
-      <span class="text-paper-100">I build the </span>
-      <span class="text-gradient">AI piece</span>
-      <span class="text-paper-100"> you don't want to figure out yourself.</span>
+      <span class="text-paper-100">Operator-grade AI.</span>
+      <br />
+      <span class="text-gradient">Built to ship, not to demo.</span>
     </h1>
 
+    {/* Sub-paragraph. Shortened from the previous Hero copy. The full
+        operator backstory now lives in the About section, which gives
+        the Hero room to breathe and pushes visitors to keep scrolling
+        for the human story. The link to About uses the existing anchor
+        so it works whether About sits below or anywhere on the page. */}
     <p
       class="reveal mt-8 max-w-2xl text-lg leading-relaxed text-paper-200 md:text-xl"
       data-reveal-delay="280"
     >
-      I'm Igor Lima. Before college I ran a small mattress retail chain, so
-      I know what it's like to drown in busywork that should've been a
-      script. Now I ship custom AI agents, internal automations, and small
-      web tools for founders and small teams that would rather get the
-      result than the tutorial.
+      Custom AI agents, workflow automations, and AI-powered web apps for
+      founders and small teams. I'm <a href="#about" class="text-electric-400 underline-offset-4 hover:underline">Igor Lima</a>, a
+      former operator who learned to build the tools I wished I'd had.
     </p>
 
     <div class="reveal mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center" data-reveal-delay="440">
       <a
         href="#services"
-        class="btn-primary inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-ink-900 shadow-lg shadow-electric-500/20"
+        class="btn-primary btn-magnetic inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-ink-900 shadow-lg shadow-electric-500/20"
       >
         See what I can build
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -92,7 +107,7 @@ const wordmarkUrl = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.re
       </a>
       <a
         href="#portfolio"
-        class="inline-flex items-center gap-2 rounded-full border border-ink-600 px-7 py-3.5 font-semibold text-paper-100 transition-all duration-300 hover:border-electric-500 hover:text-electric-400"
+        class="btn-magnetic inline-flex items-center gap-2 rounded-full border border-ink-600 px-7 py-3.5 font-semibold text-paper-100 transition-all duration-300 hover:border-electric-500 hover:text-electric-400"
       >
         View recent work
       </a>
@@ -113,7 +128,7 @@ const wordmarkUrl = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.re
       <span class="text-ink-500">/</span>
       <span>Prompt engineering since 2020</span>
       <span class="text-ink-500">/</span>
-      <span>San Diego based</span>
+      <span>2 shipped, 1 in development</span>
     </div>
   </div>
 </section>

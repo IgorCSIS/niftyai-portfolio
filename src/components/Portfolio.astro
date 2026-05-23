@@ -2,14 +2,36 @@
 /**
  * Portfolio / Work section.
  *
- * Project cards with a short pitch, the stack used, and a link out. Until
- * there's real work to show, we ship with three plausible placeholder
- * projects so the section looks intentional rather than empty. Replace
- * these as you ship real client or personal work.
+ * Card grid with case-study spine on each entry. The spine (Problem,
+ * Approach, Result) is the difference between a project that reads like
+ * "look what I made" and one that reads like "I think about systems."
+ * Hiring managers and prospects skim cards; the ones who actually engage
+ * expand the details element to see how I made the call.
  *
- * Each project has an optional `link` (live demo) and `repo` (source).
- * Cards render the available action; if both exist, both buttons appear.
+ * Each project has an optional `link` (live demo), `repo` (source), and
+ * a `buildNotes` object that powers the expandable case-study panel.
+ * Cards render the available actions and the case-study panel only if
+ * the project actually has notes to show.
+ *
+ * Why the build notes are inline data instead of MDX or separate files:
+ * the cards are short, the notes are short, and the editing flow is
+ * "open one file and tweak strings", which is exactly what we want for content
+ * that changes whenever I ship something new.
  */
+
+interface BuildNotes {
+  // Problem the project solves, framed as a real user pain. Avoid
+  // "I wanted to learn X" framing. That's a tutorial, not a product.
+  problem: string;
+  // Approach: the architectural decision that made the project possible.
+  // One sentence, naming the lever. ("Run pandas in WebAssembly.")
+  approach: string;
+  // Architecture: optional one-line system sketch. Used on Live cards
+  // to show I think in pipelines, not just scripts.
+  architecture?: string;
+  // Why it matters: the business or user impact in plain language.
+  why?: string;
+}
 
 interface Project {
   title: string;
@@ -21,6 +43,15 @@ interface Project {
   // tangible wins make a project read as real work rather than a tutorial.
   result?: string;
   status?: "Live" | "In development" | "Case study" | "Concept";
+  // GitHub repo path ("IgorCSIS/niftystats") for the live stars badge.
+  // Pulled separately so the badge link can use shields.io while the
+  // Code button uses the full GitHub URL.
+  ghRepo?: string;
+  // Lead card flag. The first live project gets a flowing animated
+  // border so the eye lands there first. Only one card should carry it
+  // at a time, otherwise the effect becomes noise.
+  isLead?: boolean;
+  buildNotes?: BuildNotes;
 }
 
 // Two shipped products lead (NiftyStats and NiftyVid, both live), one
@@ -32,29 +63,41 @@ const projects: Project[] = [
   {
     title: "NiftyStats",
     blurb:
-      "Browser-native statistical analysis. Drop in a CSV, get descriptives, distributions, and correlations rendered in the page. Pyodide runs the Python in WebAssembly so your data never leaves your machine. No server, no signup, no email gate.",
+      "Browser-native statistical analysis. Drop in a CSV, get descriptives, distributions, and correlations rendered in the page. Pyodide runs the Python in WebAssembly so your data never leaves your machine.",
     stack: ["Vite", "React", "Pyodide", "Pandas"],
     result: "Zero-backend stats, full Python power",
     status: "Live",
     link: "https://igorcsis.github.io/niftystats/",
     repo: "https://github.com/IgorCSIS/niftystats",
+    ghRepo: "IgorCSIS/niftystats",
+    isLead: true,
+    buildNotes: {
+      problem:
+        "Quick CSV analysis usually means uploading to a server you don't fully trust or wrestling with a local Python install. Neither is great when the data is sensitive.",
+      approach:
+        "Run pandas in the browser via Pyodide (Python compiled to WebAssembly). The CSV never leaves the device, but the full pandas API is available.",
+      architecture: "Vite + React UI → Pyodide worker → pandas, NumPy, SciPy in WebAssembly",
+      why: "Sensitive data stays local. No backend means zero hosting cost. The whole site is a static bundle on GitHub Pages.",
+    },
   },
   {
-    // NiftyVid is the proof that I can wire a real AI model into a
-    // production-feeling product without standing up a server. Cloudflare
-    // Worker proxies a public Hugging Face Space running Wan 2.2 (same
-    // model class as Runway Gen-3 and Kling, but open source). Keywords
-    // in the blurb are intentional ("image to video", "Wan 2.2", "AI
-    // video generator") so the page picks up search traffic from people
-    // hunting that exact stack.
     title: "NiftyVid",
     blurb:
-      "Image-to-video AI generator in the browser. Drop a photo, write a short motion prompt, get a 5-second MP4 back. Built on Wan 2.2, the open-source answer to Runway Gen-3 and Kling. Static site on GitHub Pages, Cloudflare Worker proxying a public Hugging Face Space. No signup, no API keys, no upload limits.",
+      "Image-to-video AI generator in the browser. Drop a photo, write a short motion prompt, get a 5-second MP4 back. Built on Wan 2.2, the open-source answer to Runway Gen-3 and Kling.",
     stack: ["Astro", "Tailwind", "Cloudflare Workers", "Wan 2.2"],
     result: "Free AI video, fully in the browser",
     status: "Live",
     link: "https://igorcsis.github.io/nifty-vid/",
     repo: "https://github.com/IgorCSIS/nifty-vid",
+    ghRepo: "IgorCSIS/nifty-vid",
+    buildNotes: {
+      problem:
+        "Image-to-video AI is locked behind paid platforms (Runway, Kling, Pika). Hobbyists and small teams who want to try it hit paywalls or limited free tiers.",
+      approach:
+        "Proxy a public Hugging Face Space running Wan 2.2 through a Cloudflare Worker. Static frontend on GitHub Pages calls the Worker, never the Space directly.",
+      architecture: "Astro static site → Cloudflare Worker (CORS + URL stability) → HF Space (Wan 2.2 on shared GPU)",
+      why: "Worker abstraction means swapping inference providers (fal.ai, Replicate, private Space) doesn't touch the frontend.",
+    },
   },
   {
     title: "Retail Lead Router",
@@ -64,6 +107,13 @@ const projects: Project[] = [
     result: "Aims to handle 80% of first-touch traffic",
     status: "In development",
     repo: "https://github.com/IgorCSIS",
+    buildNotes: {
+      problem:
+        "Retail leads arrive across SMS, web form, voicemail, walk-in note. Most never get a fast first reply because triage is a person-hours job.",
+      approach:
+        "LLM classifies intent at ingest (financing, walk-in, B2B, support, spam), routes to the right team channel, drafts a personalized first reply.",
+      why: "Frees the team for the high-value 20% of leads that actually need a human voice on the other end of the line.",
+    },
   },
 ];
 
@@ -75,6 +125,15 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
   "Case study": "border-paper-300/30 bg-ink-700 text-paper-200",
   Concept: "border-paper-300/30 bg-ink-700 text-paper-200",
 };
+
+// Shields.io badge URL builder. Returns a static SVG that shields.io
+// renders server-side with live data from the GitHub API. The styling
+// args (color, label color, style=flat-square) keep the badge from
+// looking like the default green-on-grey GitHub default and match our
+// palette. The badge is wrapped in a link to the repo's stargazers page
+// so a click goes somewhere useful.
+const starBadge = (repo: string): string =>
+  `https://img.shields.io/github/stars/${repo}?style=flat-square&color=3ee0bb&labelColor=0f1115&logo=github&logoColor=8b909f&label=stars`;
 ---
 
 <section id="portfolio" class="relative py-16 md:py-24">
@@ -90,7 +149,7 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
       <div class="max-w-2xl">
         <span class="reveal section-label">Selected work</span>
         <h2
-          class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
+          class="reveal display-h2 mt-4 text-4xl font-bold md:text-5xl"
           data-reveal-delay="100"
         >
           Shipped, and more on the way.
@@ -120,12 +179,14 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
       {
         projects.map((project, i) => (
           <article
-            class="reveal card-hover group relative flex flex-col overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/40 p-6"
+            class:list={[
+              "reveal card-hover group relative flex flex-col overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/40 p-6",
+              project.isLead && "border-flow",
+            ]}
             data-reveal-delay={i * 100}
           >
             {/* Decorative project number watermark. Adds visual rhythm to
-                the grid without needing project screenshots yet. Positioned
-                fully inside the card so overflow-hidden doesn't clip it. */}
+                the grid without needing project screenshots yet. */}
             <span
               class="pointer-events-none absolute right-3 top-2 select-none font-display text-6xl font-bold leading-none text-ink-700"
               aria-hidden="true"
@@ -133,14 +194,36 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
               0{i + 1}
             </span>
 
-            {project.status && (
-              <span
-                class={`relative z-10 inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-xs ${statusStyles[project.status]}`}
-              >
-                <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
-                {project.status}
-              </span>
-            )}
+            <div class="relative z-10 flex items-center gap-2">
+              {project.status && (
+                <span
+                  class={`inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-xs ${statusStyles[project.status]}`}
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-current" />
+                  {project.status}
+                </span>
+              )}
+              {/* GitHub stars badge for projects with a real repo. The
+                  image is rendered by shields.io with live data from
+                  GitHub's API, so the star count updates on every
+                  cache refresh without us needing to fetch it ourselves. */}
+              {project.ghRepo && (
+                <a
+                  href={`https://github.com/${project.ghRepo}/stargazers`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="ml-auto opacity-70 transition-opacity hover:opacity-100"
+                  aria-label={`Star ${project.title} on GitHub`}
+                >
+                  <img
+                    src={starBadge(project.ghRepo)}
+                    alt={`${project.title} GitHub stars`}
+                    height="20"
+                    loading="lazy"
+                  />
+                </a>
+              )}
+            </div>
 
             <h3 class="relative z-10 mt-5 font-display text-xl font-semibold text-paper-100">
               {project.title}
@@ -161,15 +244,78 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
               ))}
             </ul>
 
+            {/* Case-study spine. <details> is native browser collapsible
+                content (accessible, no JS, keyboard-friendly). The
+                summary line is the "Read the build notes" affordance.
+                Inside: Problem, Approach, (optional Architecture), Why.
+                This is the audit's "case study energy" point, done
+                without forcing every visitor to read four paragraphs. */}
+            {project.buildNotes && (
+              <details class="relative z-10 mt-5 group/notes">
+                <summary class="flex cursor-pointer list-none items-center gap-2 font-mono text-xs uppercase tracking-wider text-paper-300 transition-colors hover:text-electric-400">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="transition-transform group-open/notes:rotate-90"
+                    aria-hidden="true"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                  Build notes
+                </summary>
+                <div class="mt-4 space-y-3 border-l border-ink-600 pl-4 text-sm">
+                  <div>
+                    <div class="font-mono text-[10px] uppercase tracking-wider text-electric-400">
+                      Problem
+                    </div>
+                    <p class="mt-1 text-paper-200">{project.buildNotes.problem}</p>
+                  </div>
+                  <div>
+                    <div class="font-mono text-[10px] uppercase tracking-wider text-electric-400">
+                      Approach
+                    </div>
+                    <p class="mt-1 text-paper-200">{project.buildNotes.approach}</p>
+                  </div>
+                  {project.buildNotes.architecture && (
+                    <div>
+                      <div class="font-mono text-[10px] uppercase tracking-wider text-electric-400">
+                        Architecture
+                      </div>
+                      <p class="mt-1 font-mono text-xs text-paper-200">
+                        {project.buildNotes.architecture}
+                      </p>
+                    </div>
+                  )}
+                  {project.buildNotes.why && (
+                    <div>
+                      <div class="font-mono text-[10px] uppercase tracking-wider text-electric-400">
+                        Why it matters
+                      </div>
+                      <p class="mt-1 text-paper-200">{project.buildNotes.why}</p>
+                    </div>
+                  )}
+                </div>
+              </details>
+            )}
+
             <div class="relative z-10 mt-6 flex items-center gap-4 text-sm">
               {project.link && (
                 <a
                   href={project.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="font-semibold text-electric-400 transition-colors hover:text-electric-500"
+                  class="btn-magnetic inline-flex items-center gap-1 font-semibold text-electric-400 transition-colors hover:text-electric-500"
                 >
-                  Visit &rarr;
+                  Visit
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 17L17 7M9 7h8v8" />
+                  </svg>
                 </a>
               )}
               {project.repo && (
@@ -177,9 +323,12 @@ const statusStyles: Record<NonNullable<Project["status"]>, string> = {
                   href={project.repo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="font-semibold text-paper-200 transition-colors hover:text-paper-100"
+                  class="btn-magnetic inline-flex items-center gap-1 font-semibold text-paper-200 transition-colors hover:text-paper-100"
                 >
-                  Code &rarr;
+                  Code
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+                  </svg>
                 </a>
               )}
             </div>

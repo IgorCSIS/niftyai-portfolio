@@ -308,15 +308,23 @@ const jsonLd = {
 
     <Footer />
 
-    <!-- Reveal-on-scroll script. Imported as a module so it's bundled and
-         tree-shaken. Loaded deferred so it doesn't block first paint. -->
+    <!-- Reveal-on-scroll + cursor-glow scripts. Both are imported as
+         modules so they're bundled and tree-shaken. Loaded deferred so
+         they don't block first paint. -->
     <script>
       import { initReveal } from "../scripts/reveal";
-      initReveal();
-      // View Transitions swap the DOM without a full reload, so we re-init
-      // observers each navigation. astro:page-load fires after every nav,
-      // including the first one.
-      document.addEventListener("astro:page-load", initReveal);
+      import { initCursorGlow } from "../scripts/cursor-glow";
+
+      function boot(): void {
+        initReveal();
+        initCursorGlow();
+      }
+
+      boot();
+      // View Transitions swap the DOM without a full reload, so we
+      // re-init observers + listeners each navigation. astro:page-load
+      // fires after every nav, including the first one.
+      document.addEventListener("astro:page-load", boot);
     </script>
   </body>
 </html>
