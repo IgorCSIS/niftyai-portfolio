@@ -22,7 +22,7 @@
 
 The home base for **NiftyAi**, a one-person AI and automation studio. Single-page Astro site, static-rendered, deployed to GitHub Pages on every push to `main`. Dark theme, scroll-reveal animations, structured data for local + global SEO, contact form routed through Formspree so no email is exposed on the page.
 
-Trilingual (English, Portuguese, Spanish). Based in El Cajon, California. Open to remote work anywhere in the US, Brazil, and Latin America.
+Trilingual (English, Portuguese, Spanish). Based in San Diego, California. Open to remote work anywhere in the US, Brazil, and Latin America.
 
 ## Featured projects
 

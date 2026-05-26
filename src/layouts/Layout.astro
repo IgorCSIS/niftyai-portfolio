@@ -32,7 +32,10 @@ const OWNER_GITHUB = "https://github.com/IgorCSIS";
 
 // Local SEO anchors. Front-loading "San Diego" in the default title helps
 // Google's local pack treat the page as a San Diego business result.
-const CITY = "El Cajon";
+// Public-facing city is the metro, not a neighborhood. We keep this
+// city-level (San Diego) so the address shown to the public and to
+// search engines reads as the regional market, not a specific suburb.
+const CITY = "San Diego";
 const REGION = "California";
 const COUNTRY = "USA";
 const SERVICE_AREA = "San Diego County";
@@ -44,7 +47,7 @@ const SERVICE_AREA = "San Diego County";
 const DEFAULT_TITLE =
   "AI Agents & Automation in San Diego | NiftyAi by Igor Lima";
 const DEFAULT_DESCRIPTION =
-  "Custom AI agents, workflow automations, and AI web apps for founders and small teams. Trilingual EN/PT/ES. El Cajon, CA. Projects from $600.";
+  "Custom AI agents, workflow automations, and AI web apps for founders and small teams. Trilingual EN/PT/ES. San Diego, CA. Projects from $600.";
 
 // Long-tail keywords. Less important than they used to be (Google mostly
 // ignores meta keywords), but Bing and some smaller engines still weight
@@ -64,7 +67,7 @@ const KEYWORDS = [
   "Portuguese AI consultant",
   "Spanish AI consultant",
   "small business AI",
-  "El Cajon AI developer",
+  "San Diego AI developer",
 ].join(", ");
 
 interface Props {
@@ -238,8 +241,11 @@ const jsonLd = {
          clear signal to local-search ranking algorithms. -->
     <meta name="geo.region" content="US-CA" />
     <meta name="geo.placename" content={`${CITY}, ${REGION}`} />
-    <meta name="geo.position" content="32.7948;-116.9625" />
-    <meta name="ICBM" content="32.7948, -116.9625" />
+    <!-- Geo coords point at downtown San Diego, not a specific
+         neighborhood. Public site, no reason to publish a tighter
+         pin than the metro center. -->
+    <meta name="geo.position" content="32.7157;-117.1611" />
+    <meta name="ICBM" content="32.7157, -117.1611" />
 
     <link rel="canonical" href={canonicalUrl} />
 
