@@ -54,12 +54,33 @@ interface Project {
   buildNotes?: BuildNotes;
 }
 
-// Two shipped products lead (NiftyStats and NiftyVid, both live), one
-// concept in active development trails. As more projects ship, the
-// "In development" entries either flip to "Live" with real links or get
-// archived. Order matters: Live first so the eye lands on proof of
-// shipping, concept trails.
+// Three shipped products, all live, ordered by what does the most work
+// for the hire-me pitch. The Prompt Library leads because it's the
+// strongest single proof of the moat (prompt engineering since 2020)
+// that runs through the rest of the site. Retail Lead Router moved to
+// CurrentlyBuilding's "In development" column rather than living here
+// as a permanent concept card, because a portfolio with three shipped
+// items is a louder signal than one with two shipped + one promised.
 const projects: Project[] = [
+  {
+    title: "MASTER Prompt Library",
+    blurb:
+      "427 career-grade prompts built on a 9-layer framework (Mission, Agent, Situation, Task, Examples, Rules, Think, Eval, Output). Templates, completed exercises against real situations, and a scheduled scraper that surfaces the best prompts from across the web.",
+    stack: ["Next.js", "TypeScript", "GitHub Pages", "Scheduled scraper"],
+    result: "Six years of prompt engineering, made browsable",
+    status: "Live",
+    link: "https://igorcsis.github.io/prompt-library/",
+    // No public source link for now; the library itself is the artifact.
+    isLead: true,
+    buildNotes: {
+      problem:
+        "Most prompt libraries online are unsorted piles of clever-sounding strings. When a prompt fails, there's no framework to tell you which layer went wrong, and \"just rewrite it\" is not a methodology.",
+      approach:
+        "Every prompt is built on the MASTER framework so any failure traces to a specific missing layer. 427 prompts across 18 categories, each one audited. Two formats: Full MASTER (all 9 layers) and MASTER-lite for daily-use templates.",
+      architecture: "Next.js static export → GitHub Pages, plus a scheduled scraper that scores and ingests prompts from across the web into the discovery feed.",
+      why: "Backs up the \"prompt engineering since 2020\" claim with a clickable, browsable artifact. The framework itself is the deliverable that hiring managers and prospects actually want to see.",
+    },
+  },
   {
     title: "NiftyStats",
     blurb:
@@ -70,7 +91,6 @@ const projects: Project[] = [
     link: "https://igorcsis.github.io/niftystats/",
     repo: "https://github.com/IgorCSIS/niftystats",
     ghRepo: "IgorCSIS/niftystats",
-    isLead: true,
     buildNotes: {
       problem:
         "Quick CSV analysis usually means uploading to a server you don't fully trust or wrestling with a local Python install. Neither is great when the data is sensitive.",
@@ -97,22 +117,6 @@ const projects: Project[] = [
         "Proxy a public Hugging Face Space running Wan 2.2 through a Cloudflare Worker. Static frontend on GitHub Pages calls the Worker, never the Space directly.",
       architecture: "Astro static site → Cloudflare Worker (CORS + URL stability) → HF Space (Wan 2.2 on shared GPU)",
       why: "Worker abstraction means swapping inference providers (fal.ai, Replicate, private Space) doesn't touch the frontend.",
-    },
-  },
-  {
-    title: "Retail Lead Router",
-    blurb:
-      "Agent that reads inbound store leads (financing question, walk-in interest, B2B, support), routes each to the right channel, and drafts the first reply. Born out of running mattress stores myself, so the categories aren't guessed.",
-    stack: ["Python", "OpenAI", "Twilio", "Postgres"],
-    result: "Aims to handle 80% of first-touch traffic",
-    status: "In development",
-    repo: "https://github.com/IgorCSIS",
-    buildNotes: {
-      problem:
-        "Retail leads arrive across SMS, web form, voicemail, walk-in note. Most never get a fast first reply because triage is a person-hours job.",
-      approach:
-        "LLM classifies intent at ingest (financing, walk-in, B2B, support, spam), routes to the right team channel, drafts a personalized first reply.",
-      why: "Frees the team for the high-value 20% of leads that actually need a human voice on the other end of the line.",
     },
   },
 ];
@@ -155,9 +159,8 @@ const starBadge = (repo: string): string =>
           Shipped, and more on the way.
         </h2>
         <p class="reveal mt-5 text-lg text-paper-200" data-reveal-delay="200">
-          Two live products you can try right now, plus one in active
-          development. Want something like these built for your business?
-          That's the offer.
+          Three live products you can try right now, more on the way. Want
+          something like these built for your business? That's the offer.
         </p>
       </div>
 

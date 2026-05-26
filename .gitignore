@@ -26,6 +26,7 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+build.log
 
 # Lockfiles from other package managers (we use npm). If you switch
 # managers, remove the ones you don't use to avoid version drift.
