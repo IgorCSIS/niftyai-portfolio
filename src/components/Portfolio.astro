@@ -70,7 +70,12 @@ const projects: Project[] = [
     result: "Six years of prompt engineering, made browsable",
     status: "Live",
     link: "https://igorcsis.github.io/prompt-library/",
-    // No public source link for now; the library itself is the artifact.
+    repo: "https://github.com/IgorCSIS/prompt-library",
+    // ghRepo is the "user/repo" slug that drives the shields.io live-stars
+    // badge in the card header. Keeping it separate from `repo` lets the
+    // badge URL stay shields-flavored while the Code button uses the
+    // canonical github.com link.
+    ghRepo: "IgorCSIS/prompt-library",
     isLead: true,
     buildNotes: {
       problem:
