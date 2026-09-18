@@ -26,12 +26,12 @@ export const site = {
   linkedin: "https://www.linkedin.com/in/mrigorlima",
   github: "https://github.com/IgorCSIS",
   /**
-   * Public contact email. Left null on purpose: every contact path runs
-   * through the Formspree form so there's no scrapable mailto on the page.
-   * Set it to a real address (e.g. "igor@example.com") and the Contact
-   * section grows an email card automatically. Nothing else to change.
+   * Public contact email, shown as the fallback when the form does not go
+   * through. Publishing it means scrapers will find it, which is the
+   * accepted trade for never losing a lead to a broken form. Set to null
+   * to pull it off the page entirely; the Contact section adapts.
    */
-  email: null as string | null,
+  email: "niftystudiodesigns@gmail.com" as string | null,
 } as const;
 
 export const meta = {
@@ -292,5 +292,31 @@ export const contact = {
     "Fixed quotes, agreed before work starts",
     "You own the code and the repository",
     "Straight answer if I am not the right fit",
+  ],
+  /**
+   * The "Elsewhere" card. These are the links worth a click after someone
+   * has read the page, ordered by what actually builds trust: the person,
+   * then the thing they shipped, then the code. `primary: true` gets the
+   * full-width prominent treatment; everything else sits in the row below.
+   */
+  elsewhere: [
+    {
+      label: "LinkedIn",
+      note: "The background, in full",
+      href: "https://www.linkedin.com/in/mrigorlima",
+      primary: true,
+    },
+    {
+      label: "TrustLens",
+      note: "Something I built, running live",
+      href: "https://trustlens-web.niftyai.workers.dev",
+      primary: true,
+    },
+    {
+      label: "GitHub",
+      note: "The code",
+      href: "https://github.com/IgorCSIS",
+      primary: false,
+    },
   ],
 } as const;
