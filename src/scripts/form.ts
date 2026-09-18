@@ -67,6 +67,13 @@ export function initContactForm(): void {
   const form = document.getElementById("contact-form") as HTMLFormElement | null;
   if (!form) return;
 
+  // The fallback address is read off the mailto link the template already
+  // renders, so there is one source of truth (src/data/site.ts) and this
+  // script does not need its own copy that could drift.
+  const fallbackEmail =
+    form.querySelector<HTMLAnchorElement>('a[href^="mailto:"]')?.href.replace("mailto:", "") ?? "";
+  const fallbackLine = fallbackEmail ? ` Email me at ${fallbackEmail} instead.` : "";
+
   const status = document.getElementById("form-status");
   const button = form.querySelector<HTMLButtonElement>("[data-submit]");
   const label = form.querySelector<HTMLElement>("[data-submit-label]");
@@ -143,17 +150,13 @@ export function initContactForm(): void {
       // A 4xx here usually means the endpoint placeholder was never
       // swapped for a real form id. Say something useful either way.
       if (status) {
-        showStatus(
-          status,
-          "That did not go through. Try again in a moment, or reach me on LinkedIn.",
-          "error"
-        );
+        showStatus(status, `That did not go through.${fallbackLine}`, "error");
       }
     } catch {
       if (status) {
         showStatus(
           status,
-          "Network trouble on the way out. Try again, or reach me on LinkedIn.",
+          `Network trouble on the way out. Try again in a moment.${fallbackLine}`,
           "error"
         );
       }

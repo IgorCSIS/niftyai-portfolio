@@ -135,6 +135,15 @@ const formspreeEndpoint =
             </p>
           </div>
 
+          {
+            site.email && (
+              <p class="text-sm text-mist-300">
+                Form giving you trouble? Email me straight at{" "}
+                <a href={`mailto:${site.email}`} class="link-underline font-medium">{site.email}</a>.
+              </p>
+            )
+          }
+
           <!-- Status line. aria-live so screen readers announce the result
                of a submit that never reloads the page. -->
           <p
@@ -181,23 +190,61 @@ const formspreeEndpoint =
           <p class="mt-3 text-sm text-mist-200">
             Monday to Friday, Pacific time. Based in {site.city}, {site.region}.
           </p>
-          <div class="mt-5 flex flex-wrap gap-3">
-            <a
-              href={site.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn-ghost !min-h-0 !px-4 !py-2 text-sm"
-            >
-              LinkedIn
-            </a>
-            <a
-              href={site.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn-ghost !min-h-0 !px-4 !py-2 text-sm"
-            >
-              GitHub
-            </a>
+
+          <!-- Primary links get a full row each: label, one line of context,
+               and an arrow. Big enough to read as the obvious next click. -->
+          <ul class="mt-5 space-y-2">
+            {
+              contact.elsewhere
+                .filter((link) => link.primary)
+                .map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="elsewhere-row group flex items-center justify-between gap-4 rounded-card border border-navy-600 bg-navy-950/50 px-4 py-3.5"
+                    >
+                      <span class="min-w-0">
+                        <span class="block text-sm font-semibold text-mist-50">{link.label}</span>
+                        <span class="mt-0.5 block truncate text-xs text-mist-300">{link.note}</span>
+                      </span>
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="shrink-0 text-cyan-300 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        aria-hidden="true"
+                      >
+                        <path d="M7 17 17 7M9 7h8v8" />
+                      </svg>
+                    </a>
+                  </li>
+                ))
+            }
+          </ul>
+
+          <!-- Secondary links and the email sit together on one quiet row. -->
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            {
+              contact.elsewhere
+                .filter((link) => !link.primary)
+                .map((link) => (
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-ghost !min-h-0 !px-4 !py-2 text-sm"
+                  >
+                    {link.label}
+                  </a>
+                ))
+            }
             {
               site.email && (
                 <a href={`mailto:${site.email}`} class="btn btn-ghost !min-h-0 !px-4 !py-2 text-sm">
@@ -206,8 +253,39 @@ const formspreeEndpoint =
               )
             }
           </div>
+
+          {
+            site.email && (
+              <p class="mt-4 border-t border-navy-700 pt-4 font-mono text-xs text-mist-300">
+                <a href={`mailto:${site.email}`} class="link-underline break-all">
+                  {site.email}
+                </a>
+              </p>
+            )
+          }
         </div>
       </aside>
     </div>
   </div>
 </section>
+
+<style>
+  /* Prominent link rows in the Elsewhere card. The border warms to cyan and
+     the row lifts a little, matching the card hover language used elsewhere
+     on the page without borrowing the full .surface-hover shadow, which is
+     too heavy for something nested inside another card. */
+  .elsewhere-row {
+    transition:
+      border-color 0.35s var(--ease-soft),
+      background-color 0.35s var(--ease-soft),
+      transform 0.35s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .elsewhere-row:hover {
+      border-color: theme("colors.cyan.400");
+      background-color: rgba(34, 211, 238, 0.07);
+      transform: translateY(-2px);
+    }
+  }
+</style>
