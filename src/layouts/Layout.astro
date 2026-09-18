@@ -1,199 +1,127 @@
 ---
 /**
- * Root layout for every page on the site.
+ * Document shell for every page.
  *
- * This is where the document shell lives: <head> meta, font preconnects,
- * the always-visible header and footer, and Astro's View Transitions.
+ * Owns <head>, the sticky nav, the footer, and the two small client
+ * scripts. Page content goes through the default slot.
  *
  * SEO posture:
- * - Title is "front-loaded" with the service category + city so Google's
- *   local pack has a shot at picking us up. Order matters in titles:
- *   the first few words are weighted heaviest.
- * - Description is under 160 characters (Google truncates around there)
- *   and includes the value prop plus a price anchor. Searchers see this
- *   in the SERP snippet; a clear hook means more clicks per impression.
- * - JSON-LD schemas describe the Person (Igor Lima) and the
- *   ProfessionalService (NiftyAi). This is how rich snippets get built.
- * - Open Graph + Twitter cards have proper image dimensions so link
- *   previews don't get re-cropped to garbage on mobile.
+ *  - Title leads with the name and the service plus both city names, since
+ *    "python automation el cajon" and "python automation san diego" are
+ *    two different searches and the second is the bigger one.
+ *  - Description stays under 160 characters so Google shows it whole.
+ *  - JSON-LD describes a Person and a ProfessionalService. Prices in the
+ *    schema come from src/data/site.ts, so the structured data cannot
+ *    drift away from what the page actually says.
  */
 import "../styles/global.css";
-import { ViewTransitions } from "astro:transitions";
-import Header from "@components/Header.astro";
+import Nav from "@components/Nav.astro";
 import Footer from "@components/Footer.astro";
-
-// Brand constants. Anywhere on the site, change these in one place.
-// Note: email is intentionally NOT a constant here. All contact funnels
-// through the Formspree-backed form so we don't expose a scrapable
-// mailto anywhere on the page or in the structured data.
-const SITE_NAME = "NiftyAi";
-const OWNER_NAME = "Igor Lima";
-const OWNER_GITHUB = "https://github.com/IgorCSIS";
-
-// Local SEO anchors. Front-loading "San Diego" in the default title helps
-// Google's local pack treat the page as a San Diego business result.
-// Public-facing city is the metro, not a neighborhood. We keep this
-// city-level (San Diego) so the address shown to the public and to
-// search engines reads as the regional market, not a specific suburb.
-const CITY = "San Diego";
-const REGION = "California";
-const COUNTRY = "USA";
-const SERVICE_AREA = "San Diego County";
-
-// The default title and description. Pages can override via props.
-// Title format: "<Service category> in <City> | <Brand>". This pattern
-// outperforms brand-first ("NiftyAi | AI in San Diego") for cold searches
-// because the keyword phrase users actually type lands at the front.
-const DEFAULT_TITLE =
-  "AI Agents & Automation in San Diego | NiftyAi by Igor Lima";
-const DEFAULT_DESCRIPTION =
-  "Custom AI agents, workflow automations, and AI web apps for founders and small teams. Trilingual EN/PT/ES. San Diego, CA. Projects from $600.";
-
-// Long-tail keywords. Less important than they used to be (Google mostly
-// ignores meta keywords), but Bing and some smaller engines still weight
-// them, and it costs nothing to include.
-const KEYWORDS = [
-  "AI automation San Diego",
-  "custom AI agents",
-  "AI consultant San Diego",
-  "workflow automation",
-  "LLM pipelines",
-  "AI web apps",
-  "prompt engineering",
-  "AI video generation",
-  "image to video AI",
-  "Wan 2.2",
-  "bilingual AI developer",
-  "Portuguese AI consultant",
-  "Spanish AI consultant",
-  "small business AI",
-  "San Diego AI developer",
-].join(", ");
+import MobileCta from "@components/MobileCta.astro";
+import { site, meta } from "../data/site";
 
 interface Props {
   title?: string;
   description?: string;
-  // Optional: pages that aren't the home page can supply their own image.
-  // Most pages just inherit the default OG image.
   image?: string;
 }
 
-const {
-  title = DEFAULT_TITLE,
-  description = DEFAULT_DESCRIPTION,
-  image,
-} = Astro.props;
+const { title = meta.title, description = meta.description, image } = Astro.props;
 
-// Build absolute URLs. Both the canonical and the OG image need to be
-// absolute (full https://...) for crawlers and social cards to consume them.
+/**
+ * Join the GitHub Pages base path onto a site-relative asset path.
+ * BASE_URL is "/niftyai-portfolio/" in production and "/" in dev, so the
+ * naive template-literal version produces a double slash in one of them.
+ */
+function withBase(path: string): string {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  return `${base}/${path.replace(/^\//, "")}`;
+}
+
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
-const ogImageUrl = new URL(
-  image ?? `${import.meta.env.BASE_URL}/images/og-image.png`.replace(/\/\//g, "/"),
-  Astro.site
-).href;
+const ogImageUrl = new URL(image ?? withBase("images/og-image.png"), Astro.site).href;
 
-// Structured data (JSON-LD). This is the high-leverage piece for rich
-// snippets in Google. Two schemas joined via @graph:
-//   1. Person: Igor Lima, his expertise, language skills, sameAs links.
-//   2. ProfessionalService: NiftyAi, services offered, service area,
-//      pricing range, the Person as the founder.
-// Schema.org reference: https://schema.org/ProfessionalService
 const personSchema = {
   "@type": "Person",
   "@id": `${canonicalUrl}#person`,
-  name: OWNER_NAME,
+  name: site.name,
   url: canonicalUrl,
   image: ogImageUrl,
-  jobTitle: "AI & Automation Engineer",
+  jobTitle: "Python Automation Developer",
   knowsLanguage: ["en", "pt", "es"],
   knowsAbout: [
-    "Artificial Intelligence",
-    "AI Agents",
-    "Workflow Automation",
-    "Large Language Models",
-    "Prompt Engineering",
-    "AI Video Generation",
-    "Image to Video",
-    "Web Development",
     "Python",
+    "Business Process Automation",
+    "Data Pipelines",
+    "Internal Tools",
+    "Large Language Model APIs",
     "TypeScript",
+    "React",
   ],
   address: {
     "@type": "PostalAddress",
-    addressLocality: CITY,
-    addressRegion: REGION,
-    addressCountry: COUNTRY,
+    addressLocality: site.city,
+    addressRegion: site.region,
+    addressCountry: site.country,
   },
-  sameAs: [OWNER_GITHUB],
+  sameAs: [site.linkedin, site.github],
 };
 
 const businessSchema = {
   "@type": "ProfessionalService",
   "@id": `${canonicalUrl}#business`,
-  name: SITE_NAME,
-  alternateName: `${SITE_NAME} by ${OWNER_NAME}`,
+  name: `${site.name} (${site.studio})`,
   url: canonicalUrl,
   image: ogImageUrl,
-  description: DEFAULT_DESCRIPTION,
-  // priceRange uses dollar-sign syntax that Google understands: $ < $$ < $$$.
-  // $$ signals "mid-market" which matches our $600-$2,500 starting range.
+  description: meta.description,
   priceRange: "$$",
   founder: { "@id": `${canonicalUrl}#person` },
   address: {
     "@type": "PostalAddress",
-    addressLocality: CITY,
-    addressRegion: REGION,
-    addressCountry: COUNTRY,
+    addressLocality: site.city,
+    addressRegion: site.region,
+    addressCountry: site.country,
   },
-  // areaServed: where the business can deliver work. Spans the obvious
-  // local catchment plus the Brazilian/LATAM angle we lean on.
   areaServed: [
-    { "@type": "Place", name: SERVICE_AREA },
-    { "@type": "AdministrativeArea", name: "California" },
+    { "@type": "Place", name: site.serviceArea },
+    { "@type": "AdministrativeArea", name: site.region },
     { "@type": "Country", name: "United States" },
-    { "@type": "Country", name: "Brazil" },
-    { "@type": "Place", name: "Latin America" },
   ],
-  // The actual services. Listed verbatim from the site so schema and
-  // visible content stay in sync.
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "AI and Automation Services",
+    name: "Automation services",
     itemListElement: [
       {
         "@type": "Offer",
-        itemOffered: { "@type": "Service", name: "Custom AI Agents" },
-        priceSpecification: { "@type": "PriceSpecification", price: "1200", priceCurrency: "USD" },
+        itemOffered: {
+          "@type": "Service",
+          name: "Automation audit",
+          description:
+            "One week review of repetitive workflows with a ranked, fixed-price automation plan.",
+        },
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          price: "500",
+          priceCurrency: "USD",
+        },
       },
       {
         "@type": "Offer",
-        itemOffered: { "@type": "Service", name: "Workflow Automation" },
-        priceSpecification: { "@type": "PriceSpecification", price: "600", priceCurrency: "USD" },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: { "@type": "Service", name: "AI-Powered Web Apps" },
-        priceSpecification: { "@type": "PriceSpecification", price: "2500", priceCurrency: "USD" },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: { "@type": "Service", name: "Data + LLM Pipelines" },
-        priceSpecification: { "@type": "PriceSpecification", price: "900", priceCurrency: "USD" },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: { "@type": "Service", name: "Prototype in a Week" },
-        priceSpecification: { "@type": "PriceSpecification", price: "1800", priceCurrency: "USD" },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: { "@type": "Service", name: "Consult and Pair" },
-        priceSpecification: { "@type": "PriceSpecification", price: "100", priceCurrency: "USD", unitText: "HUR" },
+        itemOffered: {
+          "@type": "Service",
+          name: "Automation build",
+          description:
+            "Fixed-scope Python automation, data pipeline, or internal tool, delivered in two to four weeks.",
+        },
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          minPrice: "2000",
+          maxPrice: "5000",
+          priceCurrency: "USD",
+        },
       },
     ],
   },
-  // Languages the business operates in. Important for the bilingual moat
-  // to surface in search for Portuguese/Spanish-speaking founders.
   availableLanguage: [
     { "@type": "Language", name: "English", alternateName: "en" },
     { "@type": "Language", name: "Portuguese", alternateName: "pt" },
@@ -201,18 +129,14 @@ const businessSchema = {
   ],
   contactPoint: {
     "@type": "ContactPoint",
-    contactType: "Customer service",
-    // URL points at the contact form anchor instead of exposing email.
-    // Search engines and AI assistants that surface this business will
-    // direct people to the form rather than scrapable inbox.
+    contactType: "Sales",
+    // Points at the form anchor rather than exposing a scrapable address.
     url: `${canonicalUrl}#contact`,
     availableLanguage: ["English", "Portuguese", "Spanish"],
-    areaServed: ["US", "BR", "Latin America"],
+    areaServed: ["US"],
   },
 };
 
-// Join both schemas under @graph so one JSON-LD block covers both.
-// Google's parser indexes each @id separately.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [personSchema, businessSchema],
@@ -224,113 +148,100 @@ const jsonLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#08090b" />
+    <meta name="theme-color" content="#0B1220" />
+    <meta name="color-scheme" content="dark" />
 
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="keywords" content={KEYWORDS} />
-    <meta name="author" content={OWNER_NAME} />
+    <meta name="keywords" content={meta.keywords.join(", ")} />
+    <meta name="author" content={site.name} />
 
-    <!-- Robots: indexable, follow links, no caching for outdated copies.
-         max-image-preview:large lets Google show the OG image at full size
-         in image search results, which materially boosts click-through. -->
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
+    <meta
+      name="robots"
+      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    />
 
-    <!-- Geo tags. Old-school but Bing still uses these, and they're a
-         clear signal to local-search ranking algorithms. -->
-    <meta name="geo.region" content="US-CA" />
-    <meta name="geo.placename" content={`${CITY}, ${REGION}`} />
-    <!-- Geo coords point at downtown San Diego, not a specific
-         neighborhood. Public site, no reason to publish a tighter
-         pin than the metro center. -->
-    <meta name="geo.position" content="32.7157;-117.1611" />
-    <meta name="ICBM" content="32.7157, -117.1611" />
+    <!-- Geo tags. Bing still reads these and they cost nothing. The pin is
+         the El Cajon city center, not a street address. -->
+    <meta name="geo.region" content={site.regionCode} />
+    <meta name="geo.placename" content={`${site.city}, ${site.region}`} />
+    <meta name="geo.position" content="32.7948;-116.9625" />
+    <meta name="ICBM" content="32.7948, -116.9625" />
 
     <link rel="canonical" href={canonicalUrl} />
 
-    <!-- Open Graph: how the link unfurls on Slack, LinkedIn, iMessage, etc.
-         The image is generated at build time; dimensions are baked in so
-         crawlers don't have to fetch the image to learn its aspect ratio. -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="pt_BR" />
-    <meta property="og:locale:alternate" content="es_ES" />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${SITE_NAME}: AI agents, automation, and web tools by ${OWNER_NAME}`} />
+    <meta
+      property="og:image:alt"
+      content={`${site.name}: Python automation for businesses in El Cajon and San Diego`}
+    />
 
-    <!-- Twitter card. summary_large_image gives the big image preview
-         instead of the tiny square thumbnail. -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content={`${SITE_NAME}: AI services by ${OWNER_NAME}`} />
 
-    <!-- JSON-LD structured data. This is the part Google parses to build
-         rich snippets (the cards with author, ratings, prices that appear
-         under search results). Set type="application/ld+json" or browsers
-         will try to execute it as JavaScript. -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
 
-    <!-- Favicon. SVG renders crisp at any size and lets us match accent
-         color. Most modern browsers honor this; older ones fall back to
-         the default browser icon, which is fine. -->
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`.replace(/\/\//g, "/")} />
+    <link rel="icon" type="image/svg+xml" href={withBase("favicon.svg")} />
 
-    <!-- Font loading: preconnect handshake first, then stylesheet with
-         display=swap so text appears in the fallback immediately and
-         swaps to the webfont when ready. No flash of invisible text. -->
+    <!-- Fonts: Inter Tight for display, Inter for body, JetBrains Mono for
+         the small uppercase labels. Weights are pinned to the four we
+         actually use so the request stays small. display=swap means text
+         paints in the fallback immediately. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
     />
-
-    <!-- View Transitions: opt-in to native cross-page transitions. -->
-    <ViewTransitions />
+    <!-- Reveals start hidden in CSS so nothing flashes before the observer
+         runs. With scripting off that observer never runs, which would
+         leave the whole page invisible, so undo the hidden state here. -->
+    <noscript>
+      <style>
+        .reveal {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+        }
+      </style>
+    </noscript>
   </head>
-  <body class="relative">
-    <!-- Skip link for keyboard users so they can jump past the nav. -->
+
+  <body class="relative antialiased">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded focus:bg-electric-500 focus:px-4 focus:py-2 focus:text-ink-900 focus:font-semibold"
+      class="sr-only rounded-full focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-cyan-400 focus:px-5 focus:py-3 focus:font-semibold focus:text-navy-900"
     >
       Skip to content
     </a>
 
-    <Header />
+    <Nav />
 
     <main id="main" class="relative z-10">
       <slot />
     </main>
 
     <Footer />
+    <MobileCta />
 
-    <!-- Reveal-on-scroll + cursor-glow scripts. Both are imported as
-         modules so they're bundled and tree-shaken. Loaded deferred so
-         they don't block first paint. -->
     <script>
       import { initReveal } from "../scripts/reveal";
-      import { initCursorGlow } from "../scripts/cursor-glow";
+      import { initNav } from "../scripts/nav";
+      import { initContactForm } from "../scripts/form";
 
-      function boot(): void {
-        initReveal();
-        initCursorGlow();
-      }
-
-      boot();
-      // View Transitions swap the DOM without a full reload, so we
-      // re-init observers + listeners each navigation. astro:page-load
-      // fires after every nav, including the first one.
-      document.addEventListener("astro:page-load", boot);
+      initReveal();
+      initNav();
+      initContactForm();
     </script>
   </body>
 </html>

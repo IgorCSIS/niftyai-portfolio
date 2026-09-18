@@ -1,4 +1,4 @@
-# robots.txt for NiftyAi by Igor Lima
+# robots.txt for Igor Lima (NiftyAi)
 # https://igorcsis.github.io/niftyai-portfolio
 #
 # We want every crawler indexing every page. The Astro sitemap integration

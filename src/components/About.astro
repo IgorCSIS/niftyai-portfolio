@@ -1,118 +1,60 @@
 ---
 /**
- * About section.
+ * About.
  *
- * Real bio, real positioning. Drops the made-up "8+ projects shipped"
- * vanity stats in favor of customer-facing value props. The stats grid
- * now answers "why should I hire this person" not "what has this person
- * done", which is a better fit for someone earlier in their portfolio.
- *
- * Layout: portrait placeholder on the left, story + stats on the right.
- * The portrait can be swapped for a real photo by editing the <img>
- * fallback block at the top of the column.
+ * Two columns: the story on the left, hard facts and the stack on the
+ * right. The operator background is the actual differentiator here, so it
+ * leads. Everything in the facts list is verifiable.
  */
-
-// Three customer-benefit stats. These are honest claims tied to the
-// services Igor actually offers. The "20+ hrs/week" line is the typical
-// outcome of a good automation engagement; the 3 languages is verifiable;
-// the 7-day prototype is the literal scope of one of the services.
-const stats = [
-  {
-    value: "20+",
-    label: "hrs/week reclaimed per automation",
-  },
-  {
-    value: "3",
-    label: "languages: EN, PT, ES",
-  },
-  {
-    value: "7 days",
-    label: "spec to deployable prototype",
-  },
-];
+import { about } from "../data/site";
 ---
 
-<section id="about" class="relative py-16 md:py-24">
-  <div class="mx-auto max-w-6xl px-6">
-    <div class="grid gap-12 lg:grid-cols-[2fr_3fr] lg:items-center">
-      <!-- Portrait placeholder. The dark gradient + huge IL initials look
-           intentional until a real photo replaces the inner block. To
-           swap: drop a square photo into /public/images/ and replace the
-           inner div with <img src={...} alt="Igor Lima" />. -->
-      <div class="reveal relative">
-        <div
-          class="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl border border-ink-600 bg-gradient-to-br from-ink-700 via-ink-800 to-ink-900"
-        >
-          <div class="flex h-full w-full items-center justify-center">
-            <span class="font-display text-9xl font-bold text-electric-500/30">
-              IL
-            </span>
-          </div>
-          <div
-            class="absolute right-4 top-4 h-3 w-3 rounded-full bg-electric-500 animate-pulse-glow"
-            aria-hidden="true"
-          ></div>
-        </div>
-        <div
-          class="reveal mt-4 inline-flex items-center gap-2 font-mono text-xs text-paper-300"
-          data-reveal-delay="200"
-        >
-          <span class="h-1.5 w-1.5 rounded-full bg-electric-500"></span>
-          status: building from San Diego, CA
+<section id="about" class="relative py-section lg:py-section-lg">
+  <div class="mx-auto max-w-6xl px-5 sm:px-6">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-7">
+        <p class="reveal label">{about.label}</p>
+        <h2 class="reveal t-h2 mt-5 text-mist-50" data-reveal-delay="60">{about.title}</h2>
+
+        <div class="mt-7 space-y-5">
+          {
+            about.paragraphs.map((paragraph, i) => (
+              <p class="reveal text-[1.02rem] leading-relaxed text-mist-200" data-reveal-delay={90 + i * 70}>
+                {paragraph}
+              </p>
+            ))
+          }
         </div>
       </div>
 
-      <div>
-        <span class="reveal section-label">About me</span>
-        <h2
-          class="reveal mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl"
-          data-reveal-delay="100"
-        >
-          Operator first. Engineer second. Both for you.
-        </h2>
-        <div class="reveal mt-6 space-y-4 text-paper-200" data-reveal-delay="200">
-          <p>
-            I'm a 2nd-year CS student, but I came to the major sideways.
-            Before college I owned and operated a small chain of mattress
-            stores. Payroll, inventory, leads, the whole thing. That's
-            where I learned that the gap between a decent business and a
-            great one is usually how much busywork the owner is drowning
-            in. Optimization stuck with me.
-          </p>
-          <p>
-            I started prompt engineering in early 2020, back when "AI
-            tools" meant Google Colab notebooks and NightCafe for image
-            generation. The proper code came later, in the last couple
-            of years. So my hands-on time with language models is longer
-            than my time as a "developer," which is rarer than it sounds.
-          </p>
-          <p>
-            I'm trilingual: English, Portuguese, Spanish, all fluent. I
-            grew up in Brazil and have been a US citizen since 2011. If
-            your customers or operations span Latin America, the US, or
-            Brazil, that's a moat I can lend you.
-          </p>
-        </div>
-
-        <!-- Why-hire-me stats. Each one is a customer-benefit claim, not
-             a vanity portfolio metric. Cascading delays so they ripple in. -->
-        <dl class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div class="lg:col-span-5 lg:pt-14">
+        <dl class="reveal surface divide-y divide-navy-700 p-1" data-reveal-delay="120">
           {
-            stats.map((stat, i) => (
-              <div
-                class="reveal rounded-xl border border-ink-600 bg-ink-800/50 p-4"
-                data-reveal-delay={300 + i * 80}
-              >
-                <dt class="font-mono text-xs uppercase tracking-wider text-paper-300">
-                  {stat.label}
+            about.facts.map((fact) => (
+              <div class="flex items-baseline justify-between gap-6 px-5 py-4">
+                <dt class="font-mono text-[0.66rem] uppercase tracking-[0.16em] text-mist-300">
+                  {fact.k}
                 </dt>
-                <dd class="mt-1 font-display text-2xl font-bold text-electric-400 md:text-3xl">
-                  {stat.value}
-                </dd>
+                <dd class="text-right text-sm font-medium text-mist-50">{fact.v}</dd>
               </div>
             ))
           }
         </dl>
+
+        <div class="reveal mt-8" data-reveal-delay="200">
+          <p class="font-mono text-[0.66rem] uppercase tracking-[0.18em] text-mist-300">
+            What I build with
+          </p>
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {
+              about.stack.map((item) => (
+                <li class="rounded-md border border-navy-600 bg-navy-950/60 px-2.5 py-1.5 font-mono text-[0.7rem] text-mist-200">
+                  {item}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
       </div>
     </div>
   </div>

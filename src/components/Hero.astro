@@ -1,147 +1,153 @@
 ---
 /**
- * Hero section.
+ * Hero.
  *
- * Three jobs the hero has to do in the first 1.5 seconds:
- *  1. Brand: chrome "Nifty" wordmark sits as a watermark behind the
- *     headline. Big visual punch, immediate identity.
- *  2. Position: Igor's actual differentiators (operator background,
- *     trilingual, optimization obsession) replace generic stack badges.
- *  3. Direction: one primary CTA to the services list, one secondary
- *     to recent work. Decisions made for the visitor, not deferred.
+ * Asymmetric: headline and CTAs take seven columns, the audit panel takes
+ * five and sits lower, so the eye travels diagonally instead of landing on
+ * a centered block. On mobile the panel stacks under the CTAs.
  *
- * The chrome wordmark lives in /public so it's served as-is without
- * going through Vite's asset pipeline. We prefix with BASE_URL so the
- * GitHub Pages deploy path (/niftyai-portfolio/) gets baked in correctly.
+ * The signature micro-interaction lives here: a cyan rule draws itself
+ * under the accent phrase on load. It runs once, takes under a second, and
+ * is the only thing on the page that animates without being scrolled to.
+ * Under prefers-reduced-motion the rule is simply already drawn.
+ *
+ * Because the header is fixed and transparent over this section, the
+ * top padding has to clear it manually.
  */
-
-// Build the absolute URLs once so the template stays clean. BASE_URL ends
-// in a "/" or "" depending on Astro config, so we collapse any accidental
-// double slash after concat. We emit a WebP + PNG pair so modern browsers
-// (~98% of traffic) pull the WebP (~690 KB) and legacy ones fall back to
-// the PNG (~2.4 MB). The <picture> markup below picks the right source.
-const wordmarkWebp = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.webp`.replace(/\/\//g, "/");
-const wordmarkPng = `${import.meta.env.BASE_URL}/images/hero-wordmark-01.png`.replace(/\/\//g, "/");
+import { hero } from "../data/site";
 ---
 
-<!-- The `cursor-glow` class wires up a radial gradient that follows the
-     mouse. Logic in src/scripts/cursor-glow.ts writes --mx/--my CSS
-     variables on mousemove. The effect degrades to a static centered
-     glow on touch devices or before the script runs, so the section
-     always looks intentional. -->
-<section class="cursor-glow relative isolate overflow-hidden" data-cursor-glow>
-  <!-- Ambient gradient orbs. Two of them, blurred heavily, drifting in
-       opposite directions. Reads as atmosphere, not shapes. -->
-  <div
-    class="absolute -top-32 left-1/4 -z-10 h-[420px] w-[420px] rounded-full bg-electric-500/15 blur-3xl"
-    aria-hidden="true"
-  ></div>
-  <div
-    class="absolute right-0 top-40 -z-10 h-[380px] w-[380px] rounded-full bg-electric-400/10 blur-3xl"
-    aria-hidden="true"
-  ></div>
+<section
+  id="hero"
+  class="relative overflow-hidden pb-20 pt-[calc(var(--header-h)+3.5rem)] sm:pb-24 sm:pt-[calc(var(--header-h)+5rem)] lg:pb-32 lg:pt-[calc(var(--header-h)+7rem)]"
+>
+  <!-- Fine grid, masked to fade before it reaches the edges. -->
+  <div class="grid-field" aria-hidden="true"></div>
 
-  <!-- Chrome Nifty wordmark as a hero watermark. Sits behind the text at
-       low opacity with a slight desaturation so it reads as texture, not
-       a competing element. mix-blend-mode: luminosity strips the residual
-       white tint and lets the chrome metallic shine show through against
-       the dark page.
+  <div class="relative mx-auto max-w-6xl px-5 sm:px-6">
+    <div class="grid items-start gap-12 lg:grid-cols-12 lg:gap-10">
+      <div class="lg:col-span-7">
+        <p class="label animate-fade-up">{hero.eyebrow}</p>
 
-       <picture> over a bare <img> so we can serve a small WebP to the
-       ~98% of browsers that support it and a PNG fallback to the rest.
-       The browser picks the first <source> whose type it can decode and
-       only downloads that one, so modern visitors pay ~690 KB for this
-       asset instead of the original ~1.7 MB PNG. -->
-  <picture class="pointer-events-none absolute right-2 top-[18%] -z-10 hidden w-[48%] max-w-[640px] select-none opacity-[0.28] mix-blend-luminosity md:block md:opacity-[0.35]">
-    <source srcset={wordmarkWebp} type="image/webp" />
-    <img
-      src={wordmarkPng}
-      alt=""
-      aria-hidden="true"
-      width="1280"
-      height="792"
-      class="block w-full h-auto"
-      loading="eager"
-      fetchpriority="high"
-    />
-  </picture>
+        <h1 class="t-display mt-7 text-mist-50">
+          <span class="block animate-fade-up [animation-delay:80ms]">{hero.headlinePre}</span>
+          <!-- The accent phrase carries the drawn rule. inline-block so the
+               pseudo-element measures the phrase, not the whole line. -->
+          <span
+            class="relative mt-1 inline-block animate-fade-up text-cyan-300 [animation-delay:160ms]"
+            data-hero-accent
+          >
+            {hero.headlineAccent}
+          </span>
+        </h1>
 
-  <div class="mx-auto max-w-6xl px-6 pt-24 pb-32 md:pt-32 md:pb-44">
-    <!-- Status pill: pulsing dot tells visitors I'm taking work right now.
-         The pulse is pure CSS via Tailwind's animate-ping utility. -->
-    <div class="reveal mb-8 inline-flex items-center gap-2 rounded-full border border-electric-500/30 bg-electric-500/5 px-4 py-1.5 text-xs font-medium text-electric-400">
-      <span class="relative flex h-2 w-2">
-        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-electric-400 opacity-60"></span>
-        <span class="relative inline-flex h-2 w-2 rounded-full bg-electric-500"></span>
-      </span>
-      Taking on new projects this quarter
-    </div>
+        <p class="t-lead mt-7 max-w-xl animate-fade-up [animation-delay:240ms]">
+          {hero.sub}
+        </p>
 
-    {/* New headline. Two sentences instead of one because the rhythm hits
-        harder: the first establishes the category ("operator-grade AI"
-        is a moat phrase Igor can defend with his actual background), the
-        second picks a fight ("not to demo" calls out the industry's
-        biggest weakness, and we have two shipped products to back the
-        claim up). The .display-h1 class gives us tighter tracking and
-        leading than Tailwind defaults, and that single change is what
-        makes large headlines read "founder site" instead of "dev blog." */}
-    <h1
-      class="reveal display-h1 max-w-4xl text-5xl font-bold md:text-7xl"
-      data-reveal-delay="120"
-    >
-      <span class="text-paper-100">Operator-grade AI.</span>
-      <br />
-      <span class="text-gradient">Built to ship, not to demo.</span>
-    </h1>
+        <div class="mt-9 flex animate-fade-up flex-col gap-3 sm:flex-row sm:items-center [animation-delay:320ms]">
+          <a href={hero.primaryCta.href} class="btn btn-primary">
+            {hero.primaryCta.label}
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a href={hero.secondaryCta.href} class="btn btn-ghost">
+            {hero.secondaryCta.label}
+          </a>
+        </div>
+      </div>
 
-    {/* Sub-paragraph. Shortened from the previous Hero copy. The full
-        operator backstory now lives in the About section, which gives
-        the Hero room to breathe and pushes visitors to keep scrolling
-        for the human story. The link to About uses the existing anchor
-        so it works whether About sits below or anywhere on the page. */}
-    <p
-      class="reveal mt-8 max-w-2xl text-lg leading-relaxed text-paper-200 md:text-xl"
-      data-reveal-delay="280"
-    >
-      Custom AI agents, workflow automations, and AI-powered web apps for
-      founders and small teams. I'm <a href="#about" class="text-electric-400 underline-offset-4 hover:underline">Igor Lima</a>, a
-      former operator who learned to build the tools I wished I'd had.
-    </p>
+      <!-- Audit panel. Offset down on large screens to break the grid line
+           across the top of the section. -->
+      <div class="animate-fade-up lg:col-span-5 lg:pt-8 [animation-delay:400ms]">
+        <div class="surface overflow-hidden rounded-panel p-7 sm:p-8">
+          <!-- Single soft bloom in the corner. One light source, not four. -->
+          <div
+            class="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl"
+            aria-hidden="true"
+          >
+          </div>
 
-    <div class="reveal mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center" data-reveal-delay="440">
-      <a
-        href="#services"
-        class="btn-primary btn-magnetic inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-ink-900 shadow-lg shadow-electric-500/20"
-      >
-        See what I can build
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M5 12h14M13 5l7 7-7 7" />
-        </svg>
-      </a>
-      <a
-        href="#portfolio"
-        class="btn-magnetic inline-flex items-center gap-2 rounded-full border border-ink-600 px-7 py-3.5 font-semibold text-paper-100 transition-all duration-300 hover:border-electric-500 hover:text-electric-400"
-      >
-        View recent work
-      </a>
-    </div>
+          <p class="label">{hero.panel.label}</p>
+          <h2 class="t-h3 mt-4 text-mist-50">{hero.panel.title}</h2>
 
-    <!-- Real differentiators, not a stack-badge dump. Visitors who skim
-         hero copy still pick up the moats: I've actually run a business,
-         I speak three languages your customers speak, and I've been
-         hands-on with LLMs longer than most CS students. -->
-    <div
-      class="reveal mt-16 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs text-paper-300"
-      data-reveal-delay="600"
-    >
-      <span class="text-electric-400">{`>`}</span>
-      <span>Operator before engineer</span>
-      <span class="text-ink-500">/</span>
-      <span>EN &middot; PT &middot; ES</span>
-      <span class="text-ink-500">/</span>
-      <span>Prompt engineering since 2020</span>
-      <span class="text-ink-500">/</span>
-      <span>3 shipped, 2 in development</span>
+          <ul class="mt-6 space-y-3.5">
+            {
+              hero.panel.lines.map((line) => (
+                <li class="flex items-start gap-3 text-[0.95rem] leading-snug text-mist-200">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="mt-0.5 shrink-0 text-cyan-400"
+                    aria-hidden="true"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <span>{line}</span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <hr class="rule my-6" />
+
+          <p class="text-sm text-mist-300">{hero.panel.footnote}</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* The drawn rule under the accent phrase. Sits 0.1em under the baseline
+     box, scales from the left, and is masked into a soft taper at the
+     right end so it reads as drawn rather than as a border. */
+  [data-hero-accent]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.06em;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(
+      90deg,
+      theme("colors.cyan.400"),
+      theme("colors.cyan.300") 62%,
+      rgba(165, 243, 252, 0)
+    );
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: hero-rule 1s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+  }
+
+  @keyframes hero-rule {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-hero-accent]::after {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+</style>

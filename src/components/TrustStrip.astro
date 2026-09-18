@@ -1,0 +1,31 @@
+---
+/**
+ * Trust strip.
+ *
+ * A single hairline band under the hero carrying the four facts that
+ * answer "who is this and can I work with them" before anyone scrolls.
+ * Deliberately not a logo wall: there are no client logos to show and a
+ * fake one would undo everything above it.
+ *
+ * On narrow screens the items wrap into two columns rather than scrolling
+ * horizontally, so nothing overflows the viewport.
+ */
+import { trustStrip } from "../data/site";
+---
+
+<section aria-label="At a glance" class="relative border-y border-navy-700/70 bg-navy-950/40">
+  <div class="mx-auto max-w-6xl px-5 sm:px-6">
+    <ul
+      class="reveal grid grid-cols-2 gap-x-6 gap-y-4 py-6 sm:py-7 md:flex md:items-center md:justify-between md:gap-8"
+    >
+      {
+        trustStrip.map((item) => (
+          <li class="flex items-center gap-2.5 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-mist-300 sm:text-xs">
+            <span class="h-1 w-1 shrink-0 rounded-full bg-cyan-400" aria-hidden="true" />
+            {item}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
