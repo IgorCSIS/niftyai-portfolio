@@ -1,0 +1,87 @@
+---
+/**
+ * How it works: Audit, Build, Retainer.
+ *
+ * Prices are on the page because hiding them costs more conversations
+ * than it saves. The middle step is visually promoted since that is where
+ * most of the money and most of the value is; the flanking steps stay
+ * quieter so the eye lands on it first.
+ *
+ * On mobile this is three stacked cards. On desktop it is a three-column
+ * row connected by a hairline so it reads as a sequence, not a menu.
+ */
+import { process } from "../data/site";
+---
+
+<section id="how-it-works" class="relative py-section lg:py-section-lg">
+  <div class="mx-auto max-w-6xl px-5 sm:px-6">
+    <div class="max-w-2xl">
+      <p class="reveal label">{process.label}</p>
+      <h2 class="reveal t-h2 mt-5 text-mist-50" data-reveal-delay="60">{process.title}</h2>
+      <p class="reveal t-lead mt-5" data-reveal-delay="120">{process.intro}</p>
+    </div>
+
+    <ol class="relative mt-12 grid gap-4 lg:mt-16 lg:grid-cols-3 lg:gap-5">
+      <!-- Connector line behind the desktop row. Hidden on mobile where
+           the stacking order already communicates sequence. -->
+      <div
+        class="pointer-events-none absolute left-0 right-0 top-14 hidden h-px bg-gradient-to-r from-transparent via-navy-600 to-transparent lg:block"
+        aria-hidden="true"
+      >
+      </div>
+
+      {
+        process.steps.map((step, i) => (
+          <li
+            class:list={[
+              "reveal surface relative flex flex-col p-7 sm:p-8",
+              step.featured
+                ? "border-cyan-400/35 bg-navy-800/80 shadow-[0_0_0_1px_rgba(34,211,238,0.1),0_30px_60px_-40px_rgba(34,211,238,0.5)]"
+                : "surface-hover",
+            ]}
+            data-reveal-delay={90 * i}
+          >
+            {step.featured && (
+              <span class="absolute -top-3 left-7 rounded-full bg-cyan-400 px-3 py-1 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-navy-900">
+                Most clients start here
+              </span>
+            )}
+
+            <div class="flex items-baseline justify-between gap-4">
+              <span class="font-mono text-xs tracking-[0.2em] text-cyan-300">{step.step}</span>
+              <span class="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-mist-300">
+                {step.duration}
+              </span>
+            </div>
+
+            <h3 class="mt-5 font-display text-2xl font-semibold tracking-tight text-mist-50">
+              {step.name}
+            </h3>
+            <p class="mt-2 font-display text-xl font-semibold tracking-tight text-cyan-300">
+              {step.price}
+            </p>
+
+            <p class="mt-5 text-[0.95rem] leading-relaxed text-mist-200">{step.body}</p>
+
+            <ul class="mt-6 space-y-2.5 border-t border-navy-700 pt-6">
+              {step.bullets.map((bullet) => (
+                <li class="flex items-start gap-2.5 text-sm text-mist-200">
+                  <span
+                    class="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-cyan-400"
+                    aria-hidden="true"
+                  />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="reveal mt-10 text-sm text-mist-300" data-reveal-delay="120">
+      Everything above is fixed price. If a build turns out to be bigger than the
+      audit said, that is my estimate to fix, not your invoice to absorb.
+    </p>
+  </div>
+</section>

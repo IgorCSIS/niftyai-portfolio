@@ -1,0 +1,134 @@
+---
+/**
+ * Sticky top navigation.
+ *
+ * Minimal on purpose: wordmark, four anchors, one button. The scrolled
+ * state (denser background, hairline border) and the scrollspy that marks
+ * the current section both live in src/scripts/nav.ts.
+ *
+ * Mobile collapses to a disclosure panel. The "Book audit" button stays
+ * visible at every width because it is the only thing on this page that
+ * actually needs to be clicked.
+ */
+import { nav, site } from "../data/site";
+---
+
+<header
+  class="site-header fixed inset-x-0 top-0 z-50 border-b border-transparent backdrop-blur-xl"
+  style="height: var(--header-h)"
+>
+  <nav
+    class="mx-auto flex h-full max-w-6xl items-center justify-between gap-6 px-5 sm:px-6"
+    aria-label="Primary"
+  >
+    <!-- Wordmark. The cyan mark is a small automation glyph: two nodes and
+         the line that connects them. Reads at 20px, which a logotype with
+         more detail would not. -->
+    <a
+      href="#top"
+      class="group flex items-center gap-2.5 font-display text-[0.98rem] font-semibold tracking-tight text-mist-50"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        aria-hidden="true"
+        class="text-cyan-400 transition-transform duration-500 group-hover:rotate-90"
+      >
+        <circle cx="4.5" cy="4.5" r="2.5" fill="currentColor" />
+        <circle cx="15.5" cy="15.5" r="2.5" fill="currentColor" opacity="0.5" />
+        <path
+          d="M4.5 7v5.5A3 3 0 0 0 7.5 15.5H13"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span>{site.name}</span>
+      <span
+        class="hidden border-l border-navy-600 pl-2.5 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-mist-300 sm:inline"
+      >
+        {site.studio}
+      </span>
+    </a>
+
+    <div class="flex items-center gap-2 md:gap-7">
+      <ul class="hidden items-center gap-7 text-sm md:flex">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} class="nav-link" data-nav-link>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a href="#contact" class="btn btn-primary hidden !min-h-0 !px-5 !py-2.5 text-sm sm:inline-flex">
+        Book audit
+      </a>
+
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Open menu"
+        class="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-mist-50 md:hidden"
+      >
+        <!-- Two bars that cross into an X when open. The transform targets
+             live in nav.ts via the data-bar attributes. -->
+        <span class="relative block h-4 w-5">
+          <span
+            data-bar="top"
+            class="absolute left-0 top-[3px] block h-0.5 w-5 rounded bg-current transition-transform duration-300"
+          ></span>
+          <span
+            data-bar="bottom"
+            class="absolute bottom-[3px] left-0 block h-0.5 w-5 rounded bg-current transition-transform duration-300"
+          ></span>
+        </span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile panel. max-height animates (height: auto cannot). The fill is
+       fully opaque rather than a tint: the header sits over the hero at
+       scroll zero, and a translucent panel let the headline read straight
+       through the menu items. -->
+  <div
+    id="mobile-menu"
+    class="max-h-0 overflow-hidden border-t border-navy-700 bg-navy-950 transition-[max-height] duration-300 ease-out md:hidden"
+  >
+    <ul class="flex flex-col px-5 py-3">
+      {
+        nav.map((item) => (
+          <li class="border-b border-navy-700/60 last:border-0">
+            <a
+              href={item.href}
+              class="block py-3.5 text-mist-200 transition-colors hover:text-cyan-300"
+              data-mobile-link
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li class="py-4">
+        <a
+          href="#contact"
+          class="btn btn-primary w-full"
+          data-mobile-link
+        >
+          Book the $500 audit
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<!-- Anchor target for the wordmark. Sits above the header spacer so the
+     smooth scroll lands at the true top. -->
+<span id="top" class="block h-0"></span>
