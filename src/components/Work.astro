@@ -8,14 +8,37 @@
  * links let people check the claim themselves, which is stronger than a
  * number nobody can verify.
  *
- * The first project gets the wide two-column treatment; the second uses
- * the same card at a quieter weight. Smaller side projects are a list,
- * not cards, so they read as context rather than as proof.
+ * Every card uses the same chrome. The status pill is the one thing that
+ * changes colour: a shipped tool is cyan, a portfolio demo is amber. That
+ * distinction is the whole reason the pill exists, because three of these
+ * are demos and a visitor should know which without reading a paragraph
+ * first.
+ *
+ * Smaller side projects are a list, not cards, so they read as context
+ * rather than as proof.
  */
 import { work } from "../data/site";
 
-// Rendered in order for both projects; keeping the labels in one array
-// means the three blocks stay visually identical between cards.
+/**
+ * Status pill colours, keyed by the project's own tone.
+ *
+ * Written out rather than interpolated because Tailwind scans source for
+ * literal class names. A string built at runtime is a class that never makes
+ * it into the stylesheet.
+ */
+const TONES = {
+  live: {
+    pill: "border-cyan-400/30 bg-cyan-400/10 text-cyan-300",
+    dot: "bg-cyan-400",
+  },
+  demo: {
+    pill: "border-amber-400/35 bg-amber-400/10 text-amber-300",
+    dot: "bg-amber-400",
+  },
+} as const;
+
+// Rendered in order on every card; keeping the labels in one array means
+// the three blocks stay visually identical from one project to the next.
 const blocks = [
   { key: "problem", label: "Problem" },
   { key: "build", label: "Build" },
@@ -29,6 +52,7 @@ const blocks = [
       <p class="reveal label">{work.label}</p>
       <h2 class="reveal t-h2 mt-5 text-mist-50" data-reveal-delay="60">{work.title}</h2>
       <p class="reveal t-lead mt-5" data-reveal-delay="120">{work.intro}</p>
+      <p class="reveal mt-4 text-[0.92rem] text-mist-300" data-reveal-delay="160">{work.note}</p>
     </div>
 
     <div class="mt-12 space-y-4 lg:mt-16 lg:space-y-5">
@@ -48,8 +72,16 @@ const blocks = [
                   <h3 class="font-display text-2xl font-semibold tracking-tight text-mist-50 sm:text-3xl">
                     {project.name}
                   </h3>
-                  <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-cyan-300">
-                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-400" aria-hidden="true" />
+                  <span
+                    class:list={[
+                      "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-[0.14em]",
+                      TONES[project.tone].pill,
+                    ]}
+                  >
+                    <span
+                      class:list={["h-1.5 w-1.5 rounded-full", TONES[project.tone].dot]}
+                      aria-hidden="true"
+                    />
                     {project.status}
                   </span>
                 </div>
@@ -118,7 +150,7 @@ const blocks = [
     </div>
 
     <!-- Smaller projects. Listed plainly so they add texture without
-         competing with the two that carry the pitch. -->
+         competing with the cards that carry the pitch. -->
     <div class="reveal mt-10 flex flex-col gap-4 border-t border-navy-700 pt-8 sm:flex-row sm:items-start sm:gap-10">
       <p class="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-mist-300 sm:w-32 sm:shrink-0 sm:pt-1">
         {work.also.title}
