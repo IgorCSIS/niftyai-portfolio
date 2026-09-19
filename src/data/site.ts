@@ -239,10 +239,10 @@ export const work = {
       build:
         "A Python and TypeScript scanner that understands proxy patterns and triages findings by what actually matters for the contract in front of it, then explains each finding in plain language instead of a severity badge.",
       result:
-        "Live in beta on Base. The triage layer cuts the noisy findings a raw scan produces down to a short list a person can actually work through. Ongoing project, still being tuned.",
+        "Live in beta on Base. The triage layer re-judges every finding a raw scan produces and marks most of them false alarms, so what is left to read is a short list rather than a wall. Ongoing project, still being tuned.",
       links: [
         { label: "Open the live app", href: "https://trustlens-web.niftyai.workers.dev", external: true },
-        { label: "Read the code", href: "https://github.com/IgorCSIS/trustlens-contracts", external: true },
+        { label: "Read the code", href: "https://github.com/IgorCSIS/trustlens-backend", external: true },
       ],
       stack: ["Python", "TypeScript", "LLM triage", "Cloudflare Workers"],
       featured: false,
