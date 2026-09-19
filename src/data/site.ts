@@ -169,12 +169,71 @@ export const work = {
   label: "Selected work",
   title: "Things I built and shipped.",
   intro:
-    "Two projects that show how I work. Both are live and both are things you can click, not screenshots of a deck.",
+    "Live work you can click. Contractor lead systems and automation tools, plus a couple of side projects that show how I build.",
+  // Said once, under the intro, so nobody has to guess which of these had a
+  // paying client behind it. None of them did, and pretending otherwise is
+  // the fastest way to lose the one person who checks.
+  note: "The contractor pieces are portfolio demos built for East County trades, not client case studies. TrustLens and NiftyStats show other build patterns.",
   projects: [
+    {
+      name: "Instant Lead Response",
+      tagline: "Instant customer reply and owner SMS notify for trades",
+      status: "Demo",
+      tone: "demo",
+      problem:
+        "The lead comes in while the contractor is twelve feet up a ladder in Santee. By the time anyone calls back that evening the homeowner has already booked whoever answered first.",
+      build:
+        "A click-through demo paced to the real clock. The lead lands, the customer gets a text back at eight seconds that names the job and asks one qualifying question, and the owner's phone buzzes at twelve with the name, the job, the city and how urgent it is. It sits next to Jobber or Housecall Pro rather than replacing either. Both paths are there: a web form, and a missed call where all you have is the number.",
+      result:
+        "A proof an East County contractor can click on their phone in under a minute. The page is labelled a demo in a header that never scrolls away, and it sends nothing. The done-for-you install behind it is the actual product.",
+      links: [
+        { label: "Open the demo", href: "https://igorcsis.github.io/instant-lead-response/", external: true },
+        { label: "Read the code", href: "https://github.com/IgorCSIS/instant-lead-response", external: true },
+      ],
+      stack: ["Automation", "Lead response", "Static demo", "East County"],
+      featured: true,
+    },
+    {
+      name: "Lead Follow-up",
+      tagline: "Same-day text and email drafts for contractor leads",
+      status: "Live tool",
+      tone: "live",
+      problem:
+        "Website leads sit unanswered for a day or two. Whoever replies first gets the walkthrough, and it is almost never the person still finishing a job at six.",
+      build:
+        "A free browser tool that turns a CSV of leads into a ready-to-send text and an email for each one, urgent leads first, with a copy button on every draft. No account, no API key, and the list never leaves the device. A Python command line version mirrors it exactly for anyone who would rather run it from a terminal.",
+      result:
+        "Paste-ready drafts for today's leads, sorted by who needs a reply today. Open it on a link and try it with the sample data before deciding anything.",
+      links: [
+        { label: "Open the tool", href: "https://igorcsis.github.io/lead-followup/", external: true },
+        { label: "Read the code", href: "https://github.com/IgorCSIS/lead-followup", external: true },
+      ],
+      stack: ["TypeScript", "Vite", "Browser only", "Contractors"],
+      featured: false,
+    },
+    {
+      name: "Ridgeview Remodeling",
+      tagline: "Lead-capture site for an East County remodeler",
+      status: "Demo brand",
+      tone: "demo",
+      problem:
+        "A weak contractor website loses the quote request before anyone finishes reading. No prices, no process, and no obvious way to ask for a number.",
+      build:
+        "A full marketing site for an invented brand: kitchens, baths and ADUs, the process spelled out step by step, honest price ranges instead of call for pricing, an FAQ, and a quote form that actually delivers. The sample reviews are labelled as samples on the page itself.",
+      result:
+        "A live demo of the kind of site I build for local trades, and the front end of the same lead loop the other two projects pick up.",
+      links: [
+        { label: "Open the demo", href: "https://igorcsis.github.io/ridgeview-remodeling-demo/", external: true },
+        { label: "Read the code", href: "https://github.com/IgorCSIS/ridgeview-remodeling-demo", external: true },
+      ],
+      stack: ["Astro", "Tailwind", "Lead capture", "Demo brand"],
+      featured: false,
+    },
     {
       name: "TrustLens",
       tagline: "Contract safety scanner and triage",
       status: "Live beta on Base",
+      tone: "live",
       problem:
         "Raw contract scanners flag everything. Point one at a proxy contract and it screams about the same handful of patterns on every upgradeable token, so the real risks drown in noise nobody reads.",
       build:
@@ -186,12 +245,13 @@ export const work = {
         { label: "Read the code", href: "https://github.com/IgorCSIS/trustlens-contracts", external: true },
       ],
       stack: ["Python", "TypeScript", "LLM triage", "Cloudflare Workers"],
-      featured: true,
+      featured: false,
     },
     {
       name: "NiftyStats",
       tagline: "Statistics in the browser, no install",
       status: "Live",
+      tone: "live",
       problem:
         "Anyone who wants to run a quick statistical test on a CSV has to install Python, pick packages, and fight an environment first. Most people give up and go back to the spreadsheet.",
       build:
@@ -211,6 +271,7 @@ export const work = {
     items: [
       { name: "NiftyVid", note: "Video generation tooling and pipelines" },
       { name: "MASTER Prompt Library", note: "A working library of prompts I use in client builds" },
+      { name: "PolicyGuard", note: "Defensive log classifier compiled into a DFA" },
     ],
   },
 } as const;
