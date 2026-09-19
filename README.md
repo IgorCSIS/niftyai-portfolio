@@ -37,10 +37,16 @@ English, Portuguese, Spanish. Based in El Cajon, California. Remote US clients w
 
 ## Featured work
 
-| Project | What it does | Stack |
-|---|---|---|
-| **[TrustLens](https://trustlens-web.niftyai.workers.dev)** ([code](https://github.com/IgorCSIS/trustlens-contracts)) | Contract safety scanner with proxy-aware triage, so real risks are not buried under the noise a raw scan produces. Live beta on Base. | Python, TypeScript, LLM triage, Cloudflare Workers |
-| **[NiftyStats](https://igorcsis.github.io/niftystats/)** ([code](https://github.com/IgorCSIS/niftystats)) | Real Python statistics in the browser tab via Pyodide. No install, no upload, no backend. | Python, Pyodide, Pandas |
+The live site is the canonical list, rendered from `work.projects` in
+`src/data/site.ts`. Duplicating it here is how it went stale last time: this
+table listed two projects while the site showed five.
+
+Currently five cards, in order: Instant Lead Response, Lead Follow-up,
+Ridgeview Remodeling, TrustLens, NiftyStats. Three of those are portfolio
+demos rather than client work, which `work.note` states on the page itself.
+Smaller pieces sit in `work.also`.
+
+See them at https://igorcsis.github.io/niftyai-portfolio/#work
 
 More at [github.com/IgorCSIS](https://github.com/IgorCSIS).
 
@@ -83,7 +89,7 @@ On Windows PowerShell, swap the copy step for `Copy-Item .env.example .env`.
 
 ```
 niftyai-portfolio/
-├── public/                # favicon, og-image.png, robots.txt
+├── public/                # favicon, robots.txt, images/og-image.png
 ├── scripts/
 │   └── og-image.html      # source for the OG card, rendered to PNG
 ├── src/
@@ -112,10 +118,17 @@ over that file, so copy changes need no markup edits.
 | Trust strip items | `trustStrip` |
 | Audience cards | `audiences` |
 | Audit / Build / Retainer, including prices | `process` |
-| Case studies and their links | `work` |
+| Case studies and their links | `work.projects` |
+| The demos-not-clients disclaimer | `work.note` |
+| The "Also built" list | `work.also` |
 | Bio, facts, stack chips | `about` |
 | FAQ questions | `faq` |
+| LinkedIn, TrustLens, GitHub cards | `contact.elsewhere` |
 | Contact copy and form options | `contact` |
+
+Before editing copy, read [CONVENTIONS.md](CONVENTIONS.md). It holds the rules
+this repo actually enforces: no em dashes in user-facing copy, no invented
+testimonials or metrics, and the Python appendix for any Python added later.
 
 Prices are read from this file by both the visible copy and the JSON-LD, so the structured
 data cannot drift out of sync with the page.
@@ -123,11 +136,17 @@ data cannot drift out of sync with the page.
 Design tokens (palette, radii, section rhythm) live in `tailwind.config.mjs`; reusable
 surface, button, and type styles live in `src/styles/global.css`.
 
-### Adding a public email address
+### The public email address
 
-`site.email` is `null` on purpose: every contact path runs through the form, so there is no
-scrapable mailto anywhere on the page. Set it to a real address and an email button appears
-in the Contact section automatically.
+`site.email` is set to a real address. Every contact path used to run through
+the Formspree form alone, which meant a broken form or a missing endpoint lost
+the lead silently with no other way to reach anyone. Publishing the address
+means scrapers will find it, and that is the accepted trade for never losing a
+lead that way.
+
+It renders in three places, each gated on `site.email &&`: under the submit
+button, in the Elsewhere card, and inside the error message when a submit
+fails. Setting it back to `null` removes all three with no other edits.
 
 ### Regenerating the OG image
 
